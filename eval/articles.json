@@ -1,9 +1,47 @@
 {
   "backlogSample": 8,
   "groups": {
-    "maintained": ["Burj Khalifa", "Tesla, Inc.", "OpenAI", "Manchester United F.C.", "Indian Premier League"],
-    "india": ["Bengaluru", "Indian Space Research Organisation", "Infosys", "Virat Kohli", "Indian Institutes of Technology", "Reliance Industries"],
-    "stale-prone": ["Mobius Motors", "List of tallest buildings", "Hyperloop One", "Quibi", "Google Stadia"],
-    "edge": ["Mercury", "Twitter", "Xyzzy nonexistent article 12345", "https://en.wikipedia.org/wiki/Earth", "Pune Metro"]
+    "maintained": [
+      "Burj Khalifa",
+      "Tesla, Inc.",
+      "OpenAI",
+      "Manchester United F.C.",
+      "Indian Premier League"
+    ],
+    "india": [
+      "Bengaluru",
+      "Indian Space Research Organisation",
+      "Infosys",
+      "Virat Kohli",
+      "Indian Institutes of Technology",
+      "Reliance Industries"
+    ],
+    "stale-prone": [
+      "Mobius Motors",
+      "List of tallest buildings",
+      "Hyperloop One",
+      "Quibi",
+      "Google Stadia"
+    ],
+    "edge": [
+      "Mercury",
+      "Twitter",
+      "Xyzzy nonexistent article 12345",
+      "https://en.wikipedia.org/wiki/Earth",
+      "Pune Metro"
+    ],
+    "consistency": [
+      "Mobius Motors",
+      "Manchester United F.C.",
+      "ISRO",
+      "List of tallest buildings"
+    ],
+    "consistency2": [
+      "Mobius Motors",
+      "Manchester United F.C."
+    ],
+    "consistency3": [
+      "Mobius Motors"
+    ]
   }
 }

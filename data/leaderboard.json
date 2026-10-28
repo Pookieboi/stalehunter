@@ -1,109 +1,28 @@
 {
-  "generatedAt": "2026-10-28T20:22:22.799Z",
+  "generatedAt": "2026-10-28T20:36:15.435Z",
   "reviewed": true,
   "articles": 22,
-  "checked": 167,
-  "outdated": 8,
-  "avgYearsUntouched": 6.821865106947296,
+  "checked": 170,
+  "outdated": 5,
+  "avgYearsUntouched": 10.875751929857364,
   "results": [
-    {
-      "title": "Manchester United F.C.",
-      "url": "https://en.wikipedia.org/wiki/Manchester_United_F.C.",
-      "lastEdited": "2026-10-25T17:42:05Z",
-      "stats": {
-        "checked": 10,
-        "outdated": 2,
-        "current": 5,
-        "unverifiable": 3,
-        "ms": 59270
-      },
-      "outdated": [
-        {
-          "claim": "club is ranked third in the Deloitte Football Money League",
-          "sentence": "The club is ranked third in the Deloitte Football Money League (behind Real Madrid and Barcelona).",
-          "currentFact": "Manchester United are ranked 8th in the 2026 Deloitte Football Money League (covering FY2024-25).",
-          "rewrite": "As of the 2026 edition covering the 2024–25 season, Manchester United are ranked eighth in the Deloitte Football Money League.",
-          "confidence": 0.95,
-          "confirmed": true,
-          "age": {
-            "written": "2010-06-22T18:46:06Z",
-            "lastTouched": "2010-06-25T04:36:55Z"
-          },
-          "sources": [
-            {
-              "title": "Matchday Revenue - Glazernomics A–Z",
-              "url": "https://glazernomics.com/entries/matchday-revenue"
-            },
-            {
-              "title": "Man United drop to lowest Money League position, Real Madrid top - ESPN",
-              "url": "https://global.espn.com/football/story/_/id/47687128/real-madrid-tops-money-league-man-united-teams-clear-record-12b"
-            },
-            {
-              "title": "Man United slide down Deloitte’s Football Money League - Yahoo Sports",
-              "url": "https://sports.yahoo.com/articles/man-united-slide-down-deloitte-100000928.html"
-            }
-          ]
-        },
-        {
-          "claim": "current home kit is a red shirt with Adidas' trademark three stripes in red on the shoulders, white shorts, and black socks",
-          "sentence": "The current home kit is a red shirt with Adidas' trademark three stripes in red on the shoulders, white shorts, and black socks.",
-          "currentFact": "The 2026–27 home kit is a red shirt with white Adidas three stripes on the shoulders and white and black detailing.",
-          "rewrite": "The 2026–27 home kit is a red shirt with white Adidas three stripes on the shoulders and white and black detailing.",
-          "confidence": 0.9,
-          "confirmed": true,
-          "age": {
-            "written": "2015-08-18T10:17:02Z",
-            "lastTouched": "2023-06-28T15:58:31Z"
-          },
-          "sources": [
-            {
-              "title": "Manchester United 26-27 Home Kit Released - Footy Headlines",
-              "url": "https://www.footyheadlines.com/2025/10/man-united-26-27-home-kit.html"
-            },
-            {
-              "title": "New 2026-27 Football Kits: Chelsea, Arsenal, Man Utd Among New Jerseys Revealed | FOX Sports",
-              "url": "https://www.foxsports.com/stories/soccer/new-2026-27-football-kits-chelsea-man-utd-arsenal-real-madrid-all-the-top-teams-jerseys-revealed"
-            }
-          ]
-        }
-      ],
-      "oldestYears": 16.34402894386772
-    },
     {
       "title": "Mobius Motors",
       "url": "https://en.wikipedia.org/wiki/Mobius_Motors",
       "lastEdited": "2026-10-23T20:50:04Z",
       "stats": {
-        "checked": 7,
+        "checked": 10,
         "outdated": 2,
         "current": 2,
-        "unverifiable": 3,
-        "ms": 45673
+        "unverifiable": 6,
+        "ms": 54502
       },
       "outdated": [
         {
-          "claim": "opening Sales & Service Centers in Mombasa in 2019 and later in Western Kenya/Kisumu",
-          "sentence": "Mobius Motors is looking to expand to the rest of the country by opening Sales & Service Centers in Mombasa in 2019 and later on in Western Kenya with a service station in Kisumu.",
-          "currentFact": "Mobius Motors went into voluntary liquidation in August 2024 and is no longer operating.",
-          "rewrite": "Mobius Motors had planned to expand to the rest of the country by opening Sales & Service Centers in Mombasa in 2019 and later in Western Kenya with a service station in Kisumu, but the company went into voluntary liquidation in August 2024.",
-          "confidence": 0.8,
-          "confirmed": true,
-          "age": {
-            "written": "2018-09-18T10:27:57Z",
-            "lastTouched": "2018-09-18T10:27:57Z"
-          },
-          "sources": [
-            {
-              "title": "Silicon Savannah: where dreams go when the dollars run out :: MalindiKenya.net - il portale italiano in Kenya",
-              "url": "https://www.malindikenya.net/en/articles/news/editorial/silicon-savannah--where-dreams-go-when-the-dollars-run-out.html"
-            }
-          ]
-        },
-        {
           "claim": "Joel Jackson is the founder and CEO of Mobius Motors",
           "sentence": "Joel Jackson is the founder and CEO of Mobius Motors.",
-          "currentFact": "Joel Jackson founded Mobius Motors in 2009; as of March 2025, Nicolas Guibert is CEO.",
-          "rewrite": "Joel Jackson founded Mobius Motors in 2009; as of March 2025, Nicolas Guibert serves as CEO.",
+          "currentFact": "Joel Jackson founded Mobius Motors in 2010 and served as CEO until 2024; as of March 2025, following acquisition by Silver Box, Nicolas Guibert is CEO.",
+          "rewrite": "Joel Jackson founded Mobius Motors in 2010 and served as its CEO until 2024; as of March 2025, following the company's acquisition by Silver Box, Nicolas Guibert is the CEO.",
           "confidence": 0.85,
           "confirmed": true,
           "age": {
@@ -112,91 +31,84 @@
           },
           "sources": [
             {
-              "title": "Joel Jackson | TED Fellows",
-              "url": "https://fellows.ted.com/fellows/1249191"
-            },
-            {
-              "title": "Joel Jackson: A vehicle built in Africa, for Africa",
-              "url": "https://www.ted.com/talks/joel_jackson_a_vehicle_built_in_africa_for_africa"
-            },
-            {
               "title": "Joel Jackson: bio, companies and investments",
               "url": "https://www.startuplist.africa/people/joel-jackson"
+            },
+            {
+              "title": "Kenya's Mobius Motors Acquired by Silver Box, Kickstarts Revival",
+              "url": "https://weetracker.com/2025/03/12/kenya-mobius-motors-acquired-by-silver-box"
+            },
+            {
+              "title": "Joel Jackson Email & Phone Number | Pinnacle Founder ...",
+              "url": "https://rocketreach.co/joel-jackson-email_10678626"
             }
           ]
-        }
-      ],
-      "oldestYears": 8.141573845888153
-    },
-    {
-      "title": "ISRO",
-      "url": "https://en.wikipedia.org/wiki/ISRO",
-      "lastEdited": "2026-10-27T18:43:01Z",
-      "stats": {
-        "checked": 10,
-        "outdated": 1,
-        "current": 5,
-        "unverifiable": 4,
-        "ms": 55893
-      },
-      "outdated": [
+        },
         {
-          "claim": "A mission to Venus is scheduled for 2025 that will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL)",
-          "sentence": "A mission to Venus is scheduled for 2025 that will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL) which has been co-developed with the Laboratoire atmosphères, milieux, observations spatiales (LATMOS) under French National Centre for Scientific Research (CNRS) and Roscosmos.",
-          "currentFact": "The Shukrayaan-1 Venus mission is now scheduled for launch on 29 March 2028, and the VIRAL instrument is being developed by IKI Russia.",
-          "rewrite": "A mission to Venus (Shukrayaan-1) is scheduled for launch on 29 March 2028 and will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL) which is being developed by IKI Russia.",
+          "claim": "factory expected to provide greater control over timing and scale of production",
+          "sentence": "The factory is expected to provide the company greater control over the timing and scale of its production, addressing its historical challenges with production delays.",
+          "currentFact": "Mobius Motors Kenya Ltd announced liquidation on 2026-10-28; its Nairobi manufacturing plant opened in January 2021.",
+          "rewrite": "The factory, inaugurated in January 2021, was intended to provide greater control over production timing and scale, but the company announced liquidation in October 2026.",
           "confidence": 0.9,
           "confirmed": true,
           "age": {
-            "written": "2020-10-01T14:17:20Z",
-            "lastTouched": "2022-06-07T06:23:06Z"
+            "written": "2018-09-07T03:20:12Z",
+            "lastTouched": "2018-09-07T03:20:12Z"
           },
           "sources": [
             {
-              "title": "Shukrayaan-1 Venus Orbiter Mission - UPSC Notes | Legacy IAS",
-              "url": "https://www.legacyias.com/shukrayaan-1-venus-orbiter-mission-upsc-notes"
+              "title": "Mobius Motors Kenya Ltd Announces Liquidation",
+              "url": "https://thekenyatimes.com/business/layoffs-loom-as-mobius-motors-shuts-down-business-operations"
             },
             {
-              "title": "Mission to the Venus, and to the Moon: Configuration and Scientific Objectives",
-              "url": "https://www.isro.gov.in/UnionCabinetApprovesIndiasMission.html"
+              "title": "The End of Mobius Motors: Kenya's Pioneering Automaker Shuts Down - tech-ish",
+              "url": "https://tech-ish.com/2024/08/06/mobius-motors-liquidation-shutdown-kenya"
             }
           ]
         }
       ],
-      "oldestYears": 4.393108373228636
+      "oldestYears": 8.14160023053084
     },
     {
-      "title": "List of tallest buildings",
-      "url": "https://en.wikipedia.org/wiki/List_of_tallest_buildings",
-      "lastEdited": "2026-09-24T14:24:22Z",
+      "title": "Manchester United F.C.",
+      "url": "https://en.wikipedia.org/wiki/Manchester_United_F.C.",
+      "lastEdited": "2026-10-25T17:42:05Z",
       "stats": {
-        "checked": 2,
+        "checked": 10,
         "outdated": 1,
-        "current": 1,
-        "unverifiable": 0,
-        "ms": 29156
+        "current": 6,
+        "unverifiable": 3,
+        "ms": 67209
       },
       "outdated": [
         {
-          "claim": "As of 2026, this list includes all 98 buildings that reach a height of 350 m or more",
-          "sentence": "As of 2026, this list includes all 98 buildings (completed and architecturally topped out) that reach a height of 350 m (1,150 ft) or more, as assessed by their highest architectural feature.",
-          "currentFact": "As of October 2026, SKYDB records 105 buildings at 350 m or taller.",
-          "rewrite": "As of October 2026, this list includes all 105 buildings (completed and architecturally topped out) that reach a height of 350 m (1,150 ft) or more, as assessed by their highest architectural feature.",
-          "confidence": 0.75,
+          "claim": "club is ranked third in the Deloitte Football Money League behind Real Madrid and Barcelona",
+          "sentence": "The club is ranked third in the Deloitte Football Money League (behind Real Madrid and Barcelona).",
+          "currentFact": "Manchester United is ranked eighth in the 2026 Deloitte Football Money League.",
+          "rewrite": "The club is ranked eighth in the 2026 Deloitte Football Money League (behind Real Madrid, Barcelona, Bayern Munich, Paris Saint-Germain, Liverpool, Manchester City, and Arsenal).",
+          "confidence": 0.95,
           "confirmed": true,
           "age": {
-            "written": "2015-05-12T14:20:27Z",
-            "lastTouched": "2026-03-21T06:38:34Z"
+            "written": "2010-06-22T18:46:06Z",
+            "lastTouched": "2010-06-25T04:36:55Z"
           },
           "sources": [
             {
-              "title": "Tallest Buildings in the World: Top 1000 Ranked | SKYDB",
-              "url": "https://www.skydb.net/top-1000-skyscrapers"
+              "title": "Man United drop to lowest Money League position, Real Madrid top - ESPN",
+              "url": "https://global.espn.com/football/story/_/id/47687128/real-madrid-tops-money-league-man-united-teams-clear-record-12b"
+            },
+            {
+              "title": "Man United slide down Deloitte’s Football Money League - Yahoo Sports",
+              "url": "https://sports.yahoo.com/articles/man-united-slide-down-deloitte-100000928.html"
+            },
+            {
+              "title": "Deloitte Football Money League 2026: Real Madrid, Barcelona & the top 20 highest revenue-generating soccer clubs in the world",
+              "url": "https://www.goal.com/en-us/news/deloitte-football-money-league-2026/bltedf9c4b411ec7212"
             }
           ]
         }
       ],
-      "oldestYears": 0.6066313280794484
+      "oldestYears": 16.344055328510407
     },
     {
       "title": "Indian Institutes of Technology",
@@ -369,6 +281,20 @@
       "oldestYears": 0
     },
     {
+      "title": "ISRO",
+      "url": "https://en.wikipedia.org/wiki/ISRO",
+      "lastEdited": "2026-10-27T18:43:01Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 5,
+        "unverifiable": 5,
+        "ms": 55398
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
       "title": "Infosys",
       "url": "https://en.wikipedia.org/wiki/Infosys",
       "lastEdited": "2026-10-17T18:05:22Z",
@@ -392,6 +318,20 @@
         "current": 2,
         "unverifiable": 0,
         "ms": 15290
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "List of tallest buildings",
+      "url": "https://en.wikipedia.org/wiki/List_of_tallest_buildings",
+      "lastEdited": "2026-09-24T14:24:22Z",
+      "stats": {
+        "checked": 2,
+        "outdated": 0,
+        "current": 1,
+        "unverifiable": 1,
+        "ms": 51189
       },
       "outdated": [],
       "oldestYears": 0

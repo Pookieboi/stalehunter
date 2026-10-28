@@ -4,7 +4,7 @@
 //   3. judge  – reasoning Nemotron model decides outdated / current / unverifiable, with citations
 //   4. verify – a second Nemotron model must independently agree before anything is called outdated
 //   5. fix    – proposes a corrected sentence plus a ready-to-paste Wikipedia citation
-// In parallel, WikiWho dates each flagged sentence (when it was written / last touched).
+// WikiWho dates every candidate sentence; long-untouched sentences are checked first.
 
 import { errorMessage } from "@/lib/errors";
 import { sentenceAges, type SentenceAge } from "./history";
@@ -87,17 +87,32 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
   const failed = results.filter((r) => r.status === "rejected");
   for (const f of failed) console.warn("[scan] chunk failed:", errorMessage((f as PromiseRejectedResult).reason));
   if (failed.length === results.length && failed.length > 0) throw (failed[0] as PromiseRejectedResult).reason;
-  const found = results.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
 
   const seen = new Set<string>();
-  const claims: Claim[] = found
-    .flatMap((r) => r.claims ?? [])
+  const candidates = results
+    .flatMap((r) => (r.status === "fulfilled" ? (r.value.claims ?? []) : []))
     .filter((c) => c && c.claim && c.query && article.sentences[c.sid] && c.kind !== "historical")
-    .map((c) => ({ ...c, sid: align(c.sid, c.claim, article.sentences) }))
-    .filter((c) => !seen.has(c.sid) && seen.add(c.sid))
-    .sort((a, b) => (b.risk ?? 0) - (a.risk ?? 0))
-    .slice(0, MAX_CLAIMS)
-    .map(({ sid, claim, query, risk }, i) => ({ id: `c${i + 1}`, sid, claim, query, risk: Number(risk) || 1 }));
+    .map((c) => ({ ...c, sid: align(c.sid, c.claim, article.sentences), risk: Number(c.risk) || 1 }))
+    .filter((c) => !seen.has(c.sid) && seen.add(c.sid));
+
+  // Prioritise with the edit history: a sentence nobody has touched in years is far more
+  // likely to be stale. Dating every candidate first makes the ranking objective and stable.
+  emit({ type: "step", stage: "scan", message: `Dating ${candidates.length} candidate sentences from the edit history` });
+  const candidateAges = await sentenceAges(
+    raw.title,
+    candidates.map((c) => article.sentences[c.sid]),
+  );
+  const yearsSince = (iso?: string) => (iso ? (Date.now() - new Date(iso).getTime()) / (365.25 * 864e5) : 0);
+  const priority = (i: number) => {
+    const c = candidates[i];
+    const kindBonus = c.kind === "future" ? 1.5 : c.kind === "as_of" ? 1 : 0;
+    return c.risk * 2 + Math.min(yearsSince(candidateAges[i]?.lastTouched), 10) * 0.6 + kindBonus;
+  };
+  const ranked = candidates
+    .map((c, i) => ({ c, age: candidateAges[i], score: priority(i) }))
+    .sort((a, b) => b.score - a.score || Number(a.c.sid.slice(1)) - Number(b.c.sid.slice(1)))
+    .slice(0, MAX_CLAIMS);
+  const claims: Claim[] = ranked.map(({ c: { sid, claim, query, risk } }, i) => ({ id: `c${i + 1}`, sid, claim, query, risk }));
 
   emit({ type: "claims", claims });
   if (claims.length === 0) {
@@ -105,13 +120,7 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
     return;
   }
 
-  // Date each flagged sentence from the edit history while the research runs.
-  const ages = sentenceAges(
-    raw.title,
-    claims.map((c) => article.sentences[c.sid]),
-  ).then((list) =>
-    list.forEach((age, i) => age && emit({ type: "age", claimId: claims[i].id, age })),
-  );
+  ranked.forEach(({ age }, i) => age && emit({ type: "age", claimId: claims[i].id, age }));
 
   // 3. Research the current state of every claim on the live web.
   emit({ type: "step", stage: "research", message: `Searching the live web for ${claims.length} facts` });
@@ -146,8 +155,6 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
     findings.push(finding);
     emit({ type: "finding", finding });
   });
-
-  await ages;
 
   const count = (v: Verdict) => findings.filter((f) => f.verdict === v).length;
   const stats: HuntStats = {
@@ -184,7 +191,9 @@ Label each claim's "kind": "present" (describes how things are now), "as_of" (a 
 "future" (a plan, forecast or expected date), or "historical" (a past event that cannot change). Historical claims are discarded.
 
 Return JSON: {"claims": [{"sid": "s12", "kind": "present"|"as_of"|"future"|"historical", "claim": "the specific changeable fact, max 15 words", "query": "web search query to find its CURRENT value (include the subject's name and the year ${today.slice(0, 4)})", "risk": 1-5 (5 = very likely outdated now)}]}
-Return at most 8 claims, highest risk first. If none, return {"claims": []}.`;
+Be inclusive: every claim you flag is verified later, so a false alarm is cheap but a missed stale fact is costly.
+Return up to 8 claims per excerpt (aim for at least 4 when the excerpt has present-tense, "as of" or future statements),
+highest risk first. If none, return {"claims": []}.`;
 }
 
 async function judge(
