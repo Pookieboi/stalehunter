@@ -1,0 +1,498 @@
+{
+  "generatedAt": "2026-10-28T20:22:22.799Z",
+  "reviewed": true,
+  "articles": 22,
+  "checked": 167,
+  "outdated": 8,
+  "avgYearsUntouched": 6.821865106947296,
+  "results": [
+    {
+      "title": "Manchester United F.C.",
+      "url": "https://en.wikipedia.org/wiki/Manchester_United_F.C.",
+      "lastEdited": "2026-10-25T17:42:05Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 2,
+        "current": 5,
+        "unverifiable": 3,
+        "ms": 59270
+      },
+      "outdated": [
+        {
+          "claim": "club is ranked third in the Deloitte Football Money League",
+          "sentence": "The club is ranked third in the Deloitte Football Money League (behind Real Madrid and Barcelona).",
+          "currentFact": "Manchester United are ranked 8th in the 2026 Deloitte Football Money League (covering FY2024-25).",
+          "rewrite": "As of the 2026 edition covering the 2024–25 season, Manchester United are ranked eighth in the Deloitte Football Money League.",
+          "confidence": 0.95,
+          "confirmed": true,
+          "age": {
+            "written": "2010-06-22T18:46:06Z",
+            "lastTouched": "2010-06-25T04:36:55Z"
+          },
+          "sources": [
+            {
+              "title": "Matchday Revenue - Glazernomics A–Z",
+              "url": "https://glazernomics.com/entries/matchday-revenue"
+            },
+            {
+              "title": "Man United drop to lowest Money League position, Real Madrid top - ESPN",
+              "url": "https://global.espn.com/football/story/_/id/47687128/real-madrid-tops-money-league-man-united-teams-clear-record-12b"
+            },
+            {
+              "title": "Man United slide down Deloitte’s Football Money League - Yahoo Sports",
+              "url": "https://sports.yahoo.com/articles/man-united-slide-down-deloitte-100000928.html"
+            }
+          ]
+        },
+        {
+          "claim": "current home kit is a red shirt with Adidas' trademark three stripes in red on the shoulders, white shorts, and black socks",
+          "sentence": "The current home kit is a red shirt with Adidas' trademark three stripes in red on the shoulders, white shorts, and black socks.",
+          "currentFact": "The 2026–27 home kit is a red shirt with white Adidas three stripes on the shoulders and white and black detailing.",
+          "rewrite": "The 2026–27 home kit is a red shirt with white Adidas three stripes on the shoulders and white and black detailing.",
+          "confidence": 0.9,
+          "confirmed": true,
+          "age": {
+            "written": "2015-08-18T10:17:02Z",
+            "lastTouched": "2023-06-28T15:58:31Z"
+          },
+          "sources": [
+            {
+              "title": "Manchester United 26-27 Home Kit Released - Footy Headlines",
+              "url": "https://www.footyheadlines.com/2025/10/man-united-26-27-home-kit.html"
+            },
+            {
+              "title": "New 2026-27 Football Kits: Chelsea, Arsenal, Man Utd Among New Jerseys Revealed | FOX Sports",
+              "url": "https://www.foxsports.com/stories/soccer/new-2026-27-football-kits-chelsea-man-utd-arsenal-real-madrid-all-the-top-teams-jerseys-revealed"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 16.34402894386772
+    },
+    {
+      "title": "Mobius Motors",
+      "url": "https://en.wikipedia.org/wiki/Mobius_Motors",
+      "lastEdited": "2026-10-23T20:50:04Z",
+      "stats": {
+        "checked": 7,
+        "outdated": 2,
+        "current": 2,
+        "unverifiable": 3,
+        "ms": 45673
+      },
+      "outdated": [
+        {
+          "claim": "opening Sales & Service Centers in Mombasa in 2019 and later in Western Kenya/Kisumu",
+          "sentence": "Mobius Motors is looking to expand to the rest of the country by opening Sales & Service Centers in Mombasa in 2019 and later on in Western Kenya with a service station in Kisumu.",
+          "currentFact": "Mobius Motors went into voluntary liquidation in August 2024 and is no longer operating.",
+          "rewrite": "Mobius Motors had planned to expand to the rest of the country by opening Sales & Service Centers in Mombasa in 2019 and later in Western Kenya with a service station in Kisumu, but the company went into voluntary liquidation in August 2024.",
+          "confidence": 0.8,
+          "confirmed": true,
+          "age": {
+            "written": "2018-09-18T10:27:57Z",
+            "lastTouched": "2018-09-18T10:27:57Z"
+          },
+          "sources": [
+            {
+              "title": "Silicon Savannah: where dreams go when the dollars run out :: MalindiKenya.net - il portale italiano in Kenya",
+              "url": "https://www.malindikenya.net/en/articles/news/editorial/silicon-savannah--where-dreams-go-when-the-dollars-run-out.html"
+            }
+          ]
+        },
+        {
+          "claim": "Joel Jackson is the founder and CEO of Mobius Motors",
+          "sentence": "Joel Jackson is the founder and CEO of Mobius Motors.",
+          "currentFact": "Joel Jackson founded Mobius Motors in 2009; as of March 2025, Nicolas Guibert is CEO.",
+          "rewrite": "Joel Jackson founded Mobius Motors in 2009; as of March 2025, Nicolas Guibert serves as CEO.",
+          "confidence": 0.85,
+          "confirmed": true,
+          "age": {
+            "written": "2018-09-07T03:20:12Z",
+            "lastTouched": "2018-09-07T03:20:12Z"
+          },
+          "sources": [
+            {
+              "title": "Joel Jackson | TED Fellows",
+              "url": "https://fellows.ted.com/fellows/1249191"
+            },
+            {
+              "title": "Joel Jackson: A vehicle built in Africa, for Africa",
+              "url": "https://www.ted.com/talks/joel_jackson_a_vehicle_built_in_africa_for_africa"
+            },
+            {
+              "title": "Joel Jackson: bio, companies and investments",
+              "url": "https://www.startuplist.africa/people/joel-jackson"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 8.141573845888153
+    },
+    {
+      "title": "ISRO",
+      "url": "https://en.wikipedia.org/wiki/ISRO",
+      "lastEdited": "2026-10-27T18:43:01Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 1,
+        "current": 5,
+        "unverifiable": 4,
+        "ms": 55893
+      },
+      "outdated": [
+        {
+          "claim": "A mission to Venus is scheduled for 2025 that will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL)",
+          "sentence": "A mission to Venus is scheduled for 2025 that will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL) which has been co-developed with the Laboratoire atmosphères, milieux, observations spatiales (LATMOS) under French National Centre for Scientific Research (CNRS) and Roscosmos.",
+          "currentFact": "The Shukrayaan-1 Venus mission is now scheduled for launch on 29 March 2028, and the VIRAL instrument is being developed by IKI Russia.",
+          "rewrite": "A mission to Venus (Shukrayaan-1) is scheduled for launch on 29 March 2028 and will include a payload instrument called Venus Infrared Atmospheric Gases Linker (VIRAL) which is being developed by IKI Russia.",
+          "confidence": 0.9,
+          "confirmed": true,
+          "age": {
+            "written": "2020-10-01T14:17:20Z",
+            "lastTouched": "2022-06-07T06:23:06Z"
+          },
+          "sources": [
+            {
+              "title": "Shukrayaan-1 Venus Orbiter Mission - UPSC Notes | Legacy IAS",
+              "url": "https://www.legacyias.com/shukrayaan-1-venus-orbiter-mission-upsc-notes"
+            },
+            {
+              "title": "Mission to the Venus, and to the Moon: Configuration and Scientific Objectives",
+              "url": "https://www.isro.gov.in/UnionCabinetApprovesIndiasMission.html"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 4.393108373228636
+    },
+    {
+      "title": "List of tallest buildings",
+      "url": "https://en.wikipedia.org/wiki/List_of_tallest_buildings",
+      "lastEdited": "2026-09-24T14:24:22Z",
+      "stats": {
+        "checked": 2,
+        "outdated": 1,
+        "current": 1,
+        "unverifiable": 0,
+        "ms": 29156
+      },
+      "outdated": [
+        {
+          "claim": "As of 2026, this list includes all 98 buildings that reach a height of 350 m or more",
+          "sentence": "As of 2026, this list includes all 98 buildings (completed and architecturally topped out) that reach a height of 350 m (1,150 ft) or more, as assessed by their highest architectural feature.",
+          "currentFact": "As of October 2026, SKYDB records 105 buildings at 350 m or taller.",
+          "rewrite": "As of October 2026, this list includes all 105 buildings (completed and architecturally topped out) that reach a height of 350 m (1,150 ft) or more, as assessed by their highest architectural feature.",
+          "confidence": 0.75,
+          "confirmed": true,
+          "age": {
+            "written": "2015-05-12T14:20:27Z",
+            "lastTouched": "2026-03-21T06:38:34Z"
+          },
+          "sources": [
+            {
+              "title": "Tallest Buildings in the World: Top 1000 Ranked | SKYDB",
+              "url": "https://www.skydb.net/top-1000-skyscrapers"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 0.6066313280794484
+    },
+    {
+      "title": "Indian Institutes of Technology",
+      "url": "https://en.wikipedia.org/wiki/Indian_Institutes_of_Technology",
+      "lastEdited": "2026-10-17T08:41:32Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 1,
+        "current": 9,
+        "unverifiable": 0,
+        "ms": 60592
+      },
+      "outdated": [
+        {
+          "claim": "Amount varies between ₹ 900–1300 million ($19–27 million) per year for each IIT",
+          "sentence": "While the total government funding to most other engineering colleges is around ₹ 100–200 million ($2–4 million) per year, the amount varies between ₹ 900–1300 million ($19–27 million) per year for each IIT.",
+          "currentFact": "In FY2025-26, total government funding for all 23 IITs was ₹11,381 crore (≈$1.36 billion), averaging ₹495 crore (≈$59 million) per IIT.",
+          "rewrite": "While total government funding to most other engineering colleges is around ₹100–200 million ($2–4 million) per year, the amount for each IIT averaged ₹495 crore (approximately $59 million) in 2025-26, with the total allocation for all IITs reaching ₹11,381 crore that year and ₹12,123 crore budgeted for 2026-27.",
+          "confidence": 0.95,
+          "confirmed": true,
+          "age": null,
+          "sources": [
+            {
+              "title": "Only 3% in IITs, IIMs, NITs but they take 50% of India’s higher education budget - India Today",
+              "url": "https://www.indiatoday.in/education-today/featurephilia/story/iit-iim-nit-funding-3-percent-students-get-half-of-higher-education-budget-2904685-2026-05-03"
+            },
+            {
+              "title": "Press Release Page | Press Information Bureau",
+              "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2294032"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 0
+    },
+    {
+      "title": "Reliance Industries",
+      "url": "https://en.wikipedia.org/wiki/Reliance_Industries",
+      "lastEdited": "2026-10-07T02:11:55Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 1,
+        "current": 7,
+        "unverifiable": 2,
+        "ms": 95129
+      },
+      "outdated": [
+        {
+          "claim": "largest public company in India by market capitalisation and revenue, and the 88th largest company worldwide",
+          "sentence": "Reliance is the largest public company in India by market capitalisation and revenue, and the 88th largest company worldwide.",
+          "currentFact": "As of the 2026 Fortune Global 500, Reliance Industries is ranked 85th worldwide by revenue and remains the largest public company in India by market capitalisation and revenue.",
+          "rewrite": "Reliance is the largest public company in India by market capitalisation and revenue, and ranked 85th worldwide on the 2026 Fortune Global 500 list.",
+          "confidence": 0.92,
+          "confirmed": true,
+          "age": null,
+          "sources": [
+            {
+              "title": "Reliance Industries | RIL - Market Capitalization",
+              "url": "https://tradingeconomics.com/ril:in:market-capitalization"
+            },
+            {
+              "title": "Reliance Industries (NSE:RELIANCE) Market Cap & Net Worth",
+              "url": "https://stockanalysis.com/quote/nse/RELIANCE/market-cap"
+            },
+            {
+              "title": "Reliance Industries（India's largest private conglomerate）_Baiduwiki",
+              "url": "https://baike.baidu.com/en/item/Reliance%20Industries/1446196"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 0
+    },
+    {
+      "title": "Abyei (town)",
+      "url": "https://en.wikipedia.org/wiki/Abyei_(town)",
+      "lastEdited": "2026-10-25T04:14:58Z",
+      "stats": {
+        "checked": 2,
+        "outdated": 0,
+        "current": 0,
+        "unverifiable": 2,
+        "ms": 24244
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Bengaluru",
+      "url": "https://en.wikipedia.org/wiki/Bengaluru",
+      "lastEdited": "2026-10-26T22:10:21Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 5,
+        "unverifiable": 5,
+        "ms": 64201
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Burj Khalifa",
+      "url": "https://en.wikipedia.org/wiki/Burj_Khalifa",
+      "lastEdited": "2026-10-24T05:33:38Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 8,
+        "unverifiable": 2,
+        "ms": 60956
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Fenton Ferguson",
+      "url": "https://en.wikipedia.org/wiki/Fenton_Ferguson",
+      "lastEdited": "2026-10-23T20:50:04Z",
+      "stats": {
+        "checked": 3,
+        "outdated": 0,
+        "current": 2,
+        "unverifiable": 1,
+        "ms": 19884
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Google Stadia",
+      "url": "https://en.wikipedia.org/wiki/Google_Stadia",
+      "lastEdited": "2026-10-15T21:40:27Z",
+      "stats": {
+        "checked": 1,
+        "outdated": 0,
+        "current": 1,
+        "unverifiable": 0,
+        "ms": 28347
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Hyperloop One",
+      "url": "https://en.wikipedia.org/wiki/Hyperloop_One",
+      "lastEdited": "2026-10-26T16:59:30Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 7,
+        "unverifiable": 3,
+        "ms": 63679
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Indian Premier League",
+      "url": "https://en.wikipedia.org/wiki/Indian_Premier_League",
+      "lastEdited": "2026-10-25T06:13:54Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 7,
+        "unverifiable": 3,
+        "ms": 69922
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Infosys",
+      "url": "https://en.wikipedia.org/wiki/Infosys",
+      "lastEdited": "2026-10-17T18:05:22Z",
+      "stats": {
+        "checked": 8,
+        "outdated": 0,
+        "current": 7,
+        "unverifiable": 1,
+        "ms": 43187
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "List of Gogglebox episodes",
+      "url": "https://en.wikipedia.org/wiki/List_of_Gogglebox_episodes",
+      "lastEdited": "2026-10-27T11:14:09Z",
+      "stats": {
+        "checked": 2,
+        "outdated": 0,
+        "current": 2,
+        "unverifiable": 0,
+        "ms": 15290
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "OpenAI",
+      "url": "https://en.wikipedia.org/wiki/OpenAI",
+      "lastEdited": "2026-10-27T20:25:45Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 6,
+        "unverifiable": 4,
+        "ms": 50595
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Pune Metro",
+      "url": "https://en.wikipedia.org/wiki/Pune_Metro",
+      "lastEdited": "2026-10-27T06:05:45Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 4,
+        "unverifiable": 6,
+        "ms": 63504
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "TCDD E1000",
+      "url": "https://en.wikipedia.org/wiki/TCDD_E1000",
+      "lastEdited": "2026-10-20T22:18:36Z",
+      "stats": {
+        "checked": 2,
+        "outdated": 0,
+        "current": 2,
+        "unverifiable": 0,
+        "ms": 16706
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Tesla, Inc.",
+      "url": "https://en.wikipedia.org/wiki/Tesla,_Inc.",
+      "lastEdited": "2026-10-28T02:10:47Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 6,
+        "unverifiable": 4,
+        "ms": 56532
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "X (social network)",
+      "url": "https://en.wikipedia.org/wiki/X_(social_network)",
+      "lastEdited": "2026-10-28T02:03:04Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 9,
+        "unverifiable": 1,
+        "ms": 38337
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Virat Kohli",
+      "url": "https://en.wikipedia.org/wiki/Virat_Kohli",
+      "lastEdited": "2026-10-16T14:17:44Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 8,
+        "unverifiable": 2,
+        "ms": 46005
+      },
+      "outdated": [],
+      "oldestYears": 0
+    },
+    {
+      "title": "Earth",
+      "url": "https://en.wikipedia.org/wiki/Earth",
+      "lastEdited": "2026-10-26T23:15:21Z",
+      "stats": {
+        "checked": 10,
+        "outdated": 0,
+        "current": 6,
+        "unverifiable": 4,
+        "ms": 59451
+      },
+      "outdated": [],
+      "oldestYears": 0
+    }
+  ]
+}

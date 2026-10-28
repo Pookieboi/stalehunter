@@ -136,7 +136,8 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
     // Dig deeper once: if the evidence was too thin, the judge proposes a better search.
     if (finding.verdict === "unverifiable" && first.nextQuery) {
       emit({ type: "dig", claimId: c.id, query: first.nextQuery });
-      const more = await search(first.nextQuery, { maxResults: 5 }).catch(() => [] as Source[]);
+      // Basic depth is half the Tavily credits; the judge already wrote a precise query.
+      const more = await search(first.nextQuery, { maxResults: 5, deep: false }).catch(() => [] as Source[]);
       const known = new Set(sources.map((x) => x.url));
       sources = [...sources, ...more.filter((x) => !known.has(x.url))].slice(0, 8);
       ({ finding } = await judge(c, sentence, context, sources, raw.title, today, onCall, false));

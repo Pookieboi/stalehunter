@@ -64,7 +64,8 @@ export async function chat(model: string, messages: Msg[], opts: ChatOpts): Prom
       body: JSON.stringify({
         model,
         messages,
-        temperature: opts.temperature ?? 0.1,
+        // Deterministic by default: the same article should give the same report.
+        temperature: opts.temperature ?? 0,
         max_tokens: opts.maxTokens ?? 4096,
         ...(opts.json ? { response_format: { type: "json_object" } } : {}),
         ...(opts.thinking === false ? { chat_template_kwargs: { enable_thinking: false } } : {}),

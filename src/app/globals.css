@@ -1,16 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f4ef;
-  --foreground: #1b1a17;
+  --background: #0a0b0e;
+  --foreground: #ecebe6;
+  --surface: #12141a;
+  --paper: #f6f2e8;
+  --ink: #1d1b17;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
+}
+
+html {
+  color-scheme: dark;
 }
 
 body {
@@ -19,14 +30,96 @@ body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
 }
 
-@keyframes scanline {
+/* Ambient glow + film grain behind everything */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60rem 30rem at 15% -10%, rgb(220 38 38 / 0.16), transparent 60%),
+    radial-gradient(50rem 30rem at 95% 10%, rgb(245 158 11 / 0.08), transparent 60%),
+    radial-gradient(40rem 30rem at 50% 110%, rgb(16 185 129 / 0.07), transparent 60%);
+}
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+.glass {
+  background: linear-gradient(180deg, rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.02));
+  border: 1px solid rgb(255 255 255 / 0.08);
+  backdrop-filter: blur(12px);
+}
+
+/* Pale grid lines, used behind the hero */
+.grid-lines {
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+.fade-up { animation: fade-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
-
 /* Sentence currently being checked by the agent */
 .checking {
-  background: linear-gradient(90deg, transparent 0%, rgb(251 191 36 / 0.35) 50%, transparent 100%);
+  background: linear-gradient(90deg, transparent 0%, rgb(251 191 36 / 0.45) 50%, transparent 100%);
   background-size: 200% 100%;
-  animation: scanline 1.6s linear infinite;
+  animation: shimmer 1.4s linear infinite;
 }
+
+/* Horizontal scan beam that sweeps the article while the agent reads it */
+@keyframes sweep {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+.scan-beam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 90px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgb(239 68 68 / 0.12) 45%, rgb(239 68 68 / 0.35) 50%, rgb(239 68 68 / 0.12) 55%, transparent);
+  animation: sweep 2.2s linear infinite;
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0.6); }
+  100% { box-shadow: 0 0 0 10px rgb(239 68 68 / 0); }
+}
+.pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
+
+/* Animated strike-through used in the hero ticker */
+@keyframes strike {
+  from { background-size: 0% 2px; }
+  to { background-size: 100% 2px; }
+}
+.strike {
+  background-image: linear-gradient(rgb(239 68 68), rgb(239 68 68));
+  background-repeat: no-repeat;
+  background-position: 0 55%;
+  animation: strike 0.7s 0.4s ease-out both;
+}
+
+.glow-red { box-shadow: 0 0 0 1px rgb(239 68 68 / 0.35), 0 10px 40px -10px rgb(239 68 68 / 0.45); }
+.text-gradient {
+  background: linear-gradient(90deg, #ff6b5b, #f43f5e 40%, #f59e0b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+::selection { background: rgb(239 68 68 / 0.35); }
