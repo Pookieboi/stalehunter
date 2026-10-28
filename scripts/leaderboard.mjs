@@ -1,7 +1,7 @@
 // Builds data/leaderboard.json ("Hall of Stale") from saved hunt logs, without spending
 // any more API credits. Reads the raw event logs that scripts/eval.mjs writes.
 //
-// Usage: node scripts/leaderboard.mjs [eval/runs/<run> ...]   (default: the latest run)
+// Usage: node scripts/leaderboard.mjs [eval/runs/<run> ...]   (default: every run that logged sentence ages)
 import { readdirSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
@@ -9,7 +9,7 @@ const root = new URL("..", import.meta.url).pathname;
 const runsDir = join(root, "eval/runs");
 const dirs = process.argv.slice(2).length
   ? process.argv.slice(2).map((d) => join(root, d))
-  : [join(runsDir, readdirSync(runsDir).sort().at(-1))];
+  : readdirSync(runsDir).sort().map((d) => join(runsDir, d));
 
 // Verdicts rejected in hand review (eval/review.json) never reach the public leaderboard.
 const review = JSON.parse(readFileSync(join(root, "eval/review.json"), "utf8"));
@@ -41,14 +41,18 @@ for (const dir of dirs) {
           sources: f.sources.slice(0, 3),
         };
       });
-    // Later runs of the same article win.
-    const dropped = stats.outdated - outdated.length;
+    // Merge runs of the same article: keep every confirmed finding once (by sentence).
+    const prev = byTitle.get(article.title);
+    const merged = [...(prev?.outdated ?? [])];
+    for (const o of outdated) if (!merged.some((m) => m.sentence === o.sentence)) merged.push(o);
+    const checked = Math.max(prev?.stats.checked ?? 0, stats.checked, merged.length);
+    const current = Math.min(Math.max(prev?.stats.current ?? 0, stats.current), checked - merged.length);
     byTitle.set(article.title, {
       title: article.title,
       url: article.url,
       lastEdited: article.lastEdited,
-      stats: { ...stats, outdated: outdated.length, unverifiable: stats.unverifiable + dropped },
-      outdated,
+      stats: { checked, outdated: merged.length, current, unverifiable: Math.max(0, checked - merged.length - current) },
+      outdated: merged,
     });
   }
 }

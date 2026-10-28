@@ -1,8 +1,65 @@
 {
   "note": "Hand review of 'outdated' verdicts. Rejected ones are excluded from the public leaderboard.",
   "rejected": [
-    { "article": "Earth", "startsWith": "This process maintains the current average surface temperature", "why": "Compares a long-term average with a single year's reading." },
-    { "article": "ISRO", "startsWith": "At present, ISRO operates one of the largest constellations", "why": "Comparison against commercial megaconstellations; claim is about national agencies." },
-    { "article": "Mobius Motors", "startsWith": "According to Mobius Motors founder and CEO", "why": "Duplicate of the CEO finding; the sentence is an attributed quote." }
+    {
+      "article": "Earth",
+      "startsWith": "This process maintains the current average surface temperature",
+      "why": "Compares a long-term average with a single year's reading."
+    },
+    {
+      "article": "ISRO",
+      "startsWith": "At present, ISRO operates one of the largest constellations",
+      "why": "Comparison against commercial megaconstellations; claim is about national agencies."
+    },
+    {
+      "article": "Mobius Motors",
+      "startsWith": "According to Mobius Motors founder and CEO",
+      "why": "Duplicate of the CEO finding; the sentence is an attributed quote."
+    },
+    {
+      "article": "Manchester United F.C.",
+      "startsWith": "Manchester United was the highest-earning football club",
+      "why": "Historical figures; sources only disagree on valuation conversions."
+    },
+    {
+      "article": "Manchester United F.C.",
+      "startsWith": "The club appointed Sporting CP manager Ruben Amorim",
+      "why": "Past event that remains literally true."
+    },
+    {
+      "article": "Bengaluru",
+      "startsWith": "As of 2024, the metropolitan area had an estimated GDP",
+      "why": "Different definitions (metro PPP vs city nominal)."
+    },
+    {
+      "article": "Bengaluru",
+      "startsWith": "In July 2025, the state government notified",
+      "why": "Historical date dispute, not staleness."
+    },
+    {
+      "article": "Burj Khalifa",
+      "startsWith": "Designed by Skidmore, Owings & Merrill",
+      "why": "829.8 m (tip) and 828 m (roof) are both correct."
+    },
+    {
+      "article": "Burj Khalifa",
+      "startsWith": "Emaar New Year's Eve has won two Guinness World Records",
+      "why": "Historical date dispute, not staleness."
+    },
+    {
+      "article": "Infosys",
+      "startsWith": "In the fiscal year 2023-24, Infosys generated",
+      "why": "Rounding differences on a fixed fiscal year."
+    },
+    {
+      "article": "Tesla, Inc.",
+      "startsWith": "Jon McNeill, Tesla",
+      "why": "Historical date dispute, not staleness."
+    },
+    {
+      "article": "Mobius Motors",
+      "startsWith": "The factory is expected to provide the company greater control",
+      "why": "Cited liquidation date is not supported; covered by other Mobius findings."
+    }
   ]
 }
