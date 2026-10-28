@@ -89,10 +89,11 @@ function Row({ entry: r, rank }: { entry: Entry; rank: number }) {
   return (
     <li className="fade-up rounded-2xl p-5 glass sm:p-6" style={{ animationDelay: `${rank * 60}ms` }}>
       <div className="flex flex-wrap items-center gap-4">
-        <span className="font-display text-4xl text-stone-600">#{rank}</span>
+        <span className="hidden font-display text-4xl text-stone-600 sm:inline">#{rank}</span>
         <GradeRing outdated={r.stats.outdated} current={r.stats.current} size={56} />
-        <div className="min-w-0 flex-1">
+        <div className="min-w-[12rem] flex-1">
           <a href={r.url} target="_blank" rel="noreferrer" className="font-display text-3xl hover:underline">
+            <span className="text-stone-600 sm:hidden">#{rank} </span>
             {r.title}
           </a>
           <div className="text-sm text-stone-400">
@@ -104,7 +105,7 @@ function Row({ entry: r, rank }: { entry: Entry; rank: number }) {
         </div>
         <Link
           href={`/?article=${encodeURIComponent(r.title)}`}
-          className="rounded-xl bg-gradient-to-b from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-[0_8px_30px_-10px_rgb(239_68_68)] hover:brightness-110"
+          className="w-full rounded-xl bg-gradient-to-b text-center sm:w-auto from-red-500 to-red-600 px-4 py-2 text-sm font-medium text-white shadow-[0_8px_30px_-10px_rgb(239_68_68)] hover:brightness-110"
         >
           Re-run live →
         </Link>
