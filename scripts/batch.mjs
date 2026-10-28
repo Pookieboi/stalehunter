@@ -9,7 +9,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 
 const BASE = process.env.STALE_HUNTER_URL ?? "http://localhost:3000";
-const UA = { "User-Agent": "StaleHunter/0.1 (hackathon batch run)" };
+const UA = { "User-Agent": "StaleHunter/0.2 (https://github.com/Pookieboi/stalehunter) batch script" };
 const args = process.argv.slice(2);
 
 async function wiki(params) {

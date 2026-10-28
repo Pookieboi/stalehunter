@@ -1,5 +1,6 @@
 // Tavily web search: grounds every verdict in current, citable sources.
 
+import { fetchRetry } from "./http";
 import { MOCK_SEARCH, mockSearch } from "./mock";
 
 export type Source = { title: string; url: string; content: string; published?: string };
@@ -16,7 +17,7 @@ export async function search(query: string, opts: { maxResults?: number; deep?: 
   const key = process.env.TAVILY_API_KEY;
   if (!key) throw new Error("TAVILY_API_KEY is not set");
 
-  const res = await fetch("https://api.tavily.com/search", {
+  const res = await fetchRetry("https://api.tavily.com/search", {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
     body: JSON.stringify({

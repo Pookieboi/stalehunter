@@ -1,6 +1,7 @@
 // NVIDIA Nemotron models served by Nebius Token Factory (OpenAI-compatible API).
 // Docs: https://docs.tokenfactory.nebius.com/quickstart
 
+import { fetchRetry } from "./http";
 import { MOCK, mockChat } from "./mock";
 
 const BASE_URL = process.env.NEBIUS_BASE_URL ?? "https://api.tokenfactory.nebius.com/v1";
@@ -9,6 +10,8 @@ const BASE_URL = process.env.NEBIUS_BASE_URL ?? "https://api.tokenfactory.nebius
 // List available IDs with `node scripts/models.mjs` and set them in .env.local.
 export const FAST_MODEL = process.env.FAST_MODEL ?? "nvidia/nemotron-3-super-120b-a12b";
 export const REASON_MODEL = process.env.REASON_MODEL ?? "nvidia/Nemotron-3-Ultra-550b-a55b";
+// Independent second opinion on every "outdated" verdict: deliberately a different model from the judge.
+export const VERIFY_MODEL = process.env.VERIFY_MODEL ?? "nvidia/nemotron-3-super-120b-a12b";
 
 export type Msg = { role: "system" | "user" | "assistant"; content: string };
 
@@ -55,7 +58,7 @@ export async function chat(model: string, messages: Msg[], opts: ChatOpts): Prom
 
   let res: Response;
   try {
-    res = await fetch(`${BASE_URL}/chat/completions`, {
+    res = await fetchRetry(`${BASE_URL}/chat/completions`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({

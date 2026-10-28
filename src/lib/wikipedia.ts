@@ -1,6 +1,6 @@
 // Wikipedia access via the public MediaWiki API (no key needed).
 
-const UA = "StaleHunter/0.1 (https://github.com/; hackathon project)";
+import { fetchRetry, WIKI_UA } from "./http";
 
 export type Section = { heading: string; paragraphs: string[] };
 
@@ -23,12 +23,25 @@ export function parseTitle(input: string) {
 
 async function api(params: Record<string, string>) {
   const qs = new URLSearchParams({ format: "json", formatversion: "2", ...params });
-  const res = await fetch(`https://en.wikipedia.org/w/api.php?${qs}`, { headers: { "User-Agent": UA } });
+  const res = await fetchRetry(`https://en.wikipedia.org/w/api.php?${qs}`, { headers: { "User-Agent": WIKI_UA } });
   if (!res.ok) throw new Error(`Wikipedia API ${res.status}`);
   return res.json();
 }
 
+// Articles change slowly; caching avoids hammering Wikipedia on repeated hunts.
+const cache = new Map<string, { at: number; article: Article }>();
+const CACHE_MS = 10 * 60 * 1000;
+
 export async function fetchArticle(input: string): Promise<Article> {
+  const key = parseTitle(input).toLowerCase();
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.article;
+  const article = await loadArticle(input);
+  cache.set(key, { at: Date.now(), article });
+  return article;
+}
+
+async function loadArticle(input: string): Promise<Article> {
   const data = await api({
     action: "query",
     prop: "extracts|revisions|info",
