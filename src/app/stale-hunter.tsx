@@ -626,7 +626,7 @@ function ResultHeader({
         </div>
       </div>
       </div>
-      {done && (n("outdated") > 0 || (missing?.length ?? 0) > 0) && (
+      {done && (
         <EditorToolbar article={article} findings={findings} missing={missing ?? []} claims={claims} />
       )}
     </div>
@@ -679,6 +679,26 @@ function EditorToolbar({
     setTimeout(() => setCopied(""), 1500);
   };
   const btn = "rounded-lg px-3 py-1.5 text-xs transition glass hover:bg-white/10";
+  // Recently checked articles replay from cache, so a share link opens the same report instantly.
+  const shareButton = (
+    <button
+      className={btn}
+      onClick={() =>
+        copy("share", `${window.location.origin}/?article=${encodeURIComponent(article.source === "web" ? article.url : article.title)}`)
+      }
+    >
+      {copied === "share" ? "Link copied ✓" : "Copy share link"}
+    </button>
+  );
+  const nothingToFix = outdated.length === 0 && missing.length === 0;
+  if (nothingToFix) {
+    return (
+      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4 text-stone-200">
+        <span className="mr-1 text-xs uppercase tracking-widest text-stone-500">Share</span>
+        {shareButton}
+      </div>
+    );
+  }
 
   if (article.source === "web") {
     const report = [
@@ -695,6 +715,7 @@ function EditorToolbar({
         <button className={btn} onClick={() => copy("report", report)}>
           {copied === "report" ? "Copied ✓" : "Copy report (Markdown)"}
         </button>
+        {shareButton}
       </div>
     );
   }
@@ -714,6 +735,7 @@ function EditorToolbar({
       <a href={article.url.replace("/wiki/", "/wiki/Talk:")} target="_blank" rel="noopener noreferrer" className={btn}>
         Open Talk page ↗
       </a>
+      {shareButton}
     </div>
   );
 }

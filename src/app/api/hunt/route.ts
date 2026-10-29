@@ -25,7 +25,17 @@ export async function POST(req: Request) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (e: HuntEvent) => controller.enqueue(encoder.encode(JSON.stringify(e) + "\n"));
+      // The client may disconnect mid-hunt, and background steps can finish after the stream closes:
+      // drop those writes instead of throwing.
+      let open = true;
+      const send = (e: HuntEvent) => {
+        if (!open) return;
+        try {
+          controller.enqueue(encoder.encode(JSON.stringify(e) + "\n"));
+        } catch {
+          open = false;
+        }
+      };
       try {
         if (replay) {
           // Recently checked: replay the saved report quickly instead of spending credits again.
@@ -44,7 +54,10 @@ export async function POST(req: Request) {
       } catch (e) {
         send({ type: "error", message: errorMessage(e) });
       } finally {
-        controller.close();
+        if (open) {
+          open = false;
+          controller.close();
+        }
       }
     },
   });
