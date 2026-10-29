@@ -10,6 +10,7 @@ export type Source = { title: string; url: string; content: string; published?: 
 const EXCLUDE = [
   "wikipedia.org", "wikiwand.com", "wikimedia.org", "dbpedia.org", "wikidata.org", "alchetron.com",
   "facebook.com", "instagram.com", "pinterest.com", "tiktok.com", "quora.com", "youtube.com", "linkedin.com", "medium.com",
+  "x.com", "twitter.com", "reddit.com", "threads.com",
 ];
 
 export async function search(

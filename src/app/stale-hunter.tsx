@@ -431,6 +431,7 @@ function Landing({
 
       <Ticker />
       <Pipeline />
+      <ForAgents />
     </>
   );
 }
@@ -477,7 +478,7 @@ function Pipeline() {
   return (
     <section className="mx-auto my-16 max-w-6xl px-4">
       <h2 className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.25em] text-stone-500">How the agent works</h2>
-      <div className="grid gap-3 sm:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {steps.map(([title, body, color], i) => (
           <div key={title} className="fade-up rounded-2xl p-5 glass" style={{ animationDelay: `${i * 70}ms` }}>
             <div className={`font-mono text-xs ${color}`}>0{i + 1}</div>
@@ -485,6 +486,35 @@ function Pipeline() {
             <p className="mt-1.5 text-sm leading-relaxed text-stone-400">{body}</p>
           </div>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/** The same engine as an API, so other AI agents can check a fact before they repeat it. */
+function ForAgents() {
+  return (
+    <section className="mx-auto mb-20 max-w-6xl px-4">
+      <div className="grid items-center gap-6 rounded-2xl p-6 glass md:grid-cols-[1fr_1.3fr] md:p-8">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#a3e635]">For AI agents</p>
+          <h2 className="mt-2 font-display text-4xl leading-tight">Check a fact before your agent repeats it.</h2>
+          <p className="mt-3 text-stone-400">
+            The same research, judge and second-opinion pipeline as one API call. Send a statement; get back whether
+            it&apos;s still true, the current fact, a suggested rewrite and sources. About 10 seconds.
+          </p>
+        </div>
+        <pre className="overflow-x-auto rounded-xl border border-white/10 bg-black/60 p-4 font-mono text-xs leading-6 text-stone-300">
+          <span className="text-stone-500">$ </span>curl -X POST /api/check \{"\n"}
+          {"    "}-d &apos;{"{"}&quot;statement&quot;: &quot;Parag Agrawal is the CEO of Twitter.&quot;{"}"}&apos;{"\n\n"}
+          <span className="text-stone-500">{"{"}</span>
+          {"\n"}
+          {"  "}&quot;verdict&quot;: <span className="text-red-400">&quot;outdated&quot;</span>,{"\n"}
+          {"  "}&quot;current_fact&quot;: <span className="text-amber-200">&quot;Former CEO of Twitter (left Oct 2022); now CEO of Parallel Web Systems.&quot;</span>,{"\n"}
+          {"  "}&quot;confirmed_by_second_model&quot;: <span className="text-emerald-400">true</span>,{"\n"}
+          {"  "}&quot;sources&quot;: [ … ]{"\n"}
+          <span className="text-stone-500">{"}"}</span>
+        </pre>
       </div>
     </section>
   );
