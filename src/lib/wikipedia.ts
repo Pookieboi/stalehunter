@@ -9,6 +9,8 @@ export type Article = {
   url: string;
   lastEdited: string;
   sections: Section[];
+  /** Where the text came from; Wikipedia-only features (edit history, wikitext) key off this. */
+  source?: "wikipedia" | "web";
 };
 
 // Sections that hold references or navigation rather than claims.

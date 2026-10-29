@@ -8,6 +8,9 @@ import type { ArticleView, Claim, Finding, HuntEvent, HuntStats, Verdict } from 
 import type { CallRecord } from "@/lib/llm";
 import type { Missing } from "@/lib/missing";
 
+// Not just Wikipedia: any public page, read with Tavily Extract.
+const WEB_EXAMPLE = "https://www.cnbc.com/make-it/2021/11/30/parag-agrawal-went-from-twitter-engineer-to-ceo-in-just-10-years.html";
+
 const EXAMPLES = ["Mobius Motors", "Manchester United F.C.", "ISRO", "List of tallest buildings", "NewJeans"];
 
 // Real catches from our evaluation runs, cycled on the landing page.
@@ -228,7 +231,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder="Wikipedia article title or URL"
+        placeholder="Wikipedia article, or any web page URL"
         className="min-w-0 flex-1 bg-transparent px-4 py-3 text-foreground placeholder:text-stone-500 outline-none"
       />
       <button
@@ -305,6 +308,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
                     researched={researched.has(c.id)}
                     active={active === c.id}
                     articleUrl={article?.url ?? ""}
+                    isWiki={article?.source !== "web"}
                     onPick={() => focus(c.id, "sentence")}
                   />
                 ))}
@@ -404,6 +408,13 @@ function Landing({
             className="rounded-full bg-red-500/15 px-3.5 py-1.5 text-red-200 ring-1 ring-red-500/40 transition hover:bg-red-500/25"
           >
             🎲 Random article from the backlog
+          </button>
+          <button
+            onClick={() => onExample(WEB_EXAMPLE)}
+            className="rounded-full bg-sky-500/10 px-3.5 py-1.5 text-sky-200 ring-1 ring-sky-400/30 transition hover:bg-sky-500/20"
+            title={WEB_EXAMPLE}
+          >
+            🌐 Any web page: a 2021 CEO profile
           </button>
           {EXAMPLES.map((ex) => (
             <button
@@ -562,7 +573,10 @@ function ResultHeader({
           {article.title}
         </a>
         <p className="mt-1 text-sm text-stone-400">
-          Last edited {article.lastEdited ? new Date(article.lastEdited).toLocaleDateString() : "unknown"} ·{" "}
+          {article.source === "web"
+            ? `Web page · ${new URL(article.url).hostname.replace(/^www\./, "")}`
+            : `Last edited ${article.lastEdited ? new Date(article.lastEdited).toLocaleDateString() : "unknown"}`}{" "}
+          ·{" "}
           {Object.keys(article.sentences).length.toLocaleString()} sentences read · {total} {total === 1 ? "fact" : "facts"} checked
         </p>
       </div>
@@ -635,6 +649,26 @@ function EditorToolbar({
     setTimeout(() => setCopied(""), 1500);
   };
   const btn = "rounded-lg px-3 py-1.5 text-xs transition glass hover:bg-white/10";
+
+  if (article.source === "web") {
+    const report = [
+      `# Freshness report: ${article.title}`,
+      `${article.url} · checked ${today} with Stale Hunter`,
+      "",
+      ...outdated.map(
+        (f) => `- **Outdated:** "${sentenceOf(f)}"\n  - Now: ${f.currentFact}\n  - Suggested: ${f.rewrite || "n/a"}\n  - Sources: ${f.sources.map((x) => x.url).join(", ")}`,
+      ),
+    ].join("\n");
+    return (
+      <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4 text-stone-200">
+        <span className="mr-1 text-xs uppercase tracking-widest text-stone-500">For the page owner</span>
+        <button className={btn} onClick={() => copy("report", report)}>
+          {copied === "report" ? "Copied ✓" : "Copy report (Markdown)"}
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4 text-stone-200">
       <span className="mr-1 text-xs uppercase tracking-widest text-stone-500">For editors</span>
@@ -986,6 +1020,7 @@ function FindingCard({
   researched,
   active,
   articleUrl,
+  isWiki,
   onPick,
 }: {
   claim: Claim;
@@ -995,6 +1030,7 @@ function FindingCard({
   researched: boolean;
   active: boolean;
   articleUrl: string;
+  isWiki: boolean;
   onPick: () => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -1049,23 +1085,27 @@ function FindingCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              navigator.clipboard.writeText(finding.wikitext);
+              navigator.clipboard.writeText(
+                isWiki ? finding.wikitext : `${finding.rewrite}\n\nSources:\n${finding.sources.map((x) => `- ${x.url}`).join("\n")}`,
+              );
               setCopied(true);
               setTimeout(() => setCopied(false), 1500);
             }}
             className="rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-black hover:bg-stone-200"
           >
-            {copied ? "Copied ✓" : "Copy wikitext + citations"}
+            {copied ? "Copied ✓" : isWiki ? "Copy wikitext + citations" : "Copy corrected text + sources"}
           </button>
-          <a
-            href={`${articleUrl}${articleUrl.includes("?") ? "&" : "?"}action=edit`}
-            target="_blank"
-            rel="noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="rounded-lg px-2.5 py-1 text-xs text-stone-200 glass hover:bg-white/10"
-          >
-            Open editor ↗
-          </a>
+          {isWiki && (
+            <a
+              href={`${articleUrl}${articleUrl.includes("?") ? "&" : "?"}action=edit`}
+              target="_blank"
+              rel="noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="rounded-lg px-2.5 py-1 text-xs text-stone-200 glass hover:bg-white/10"
+            >
+              Open editor ↗
+            </a>
+          )}
         </div>
       )}
 

@@ -14,7 +14,7 @@ const EXCLUDE = [
 
 export async function search(
   query: string,
-  opts: { maxResults?: number; deep?: boolean; topic?: "general" | "news"; timeRange?: "month" | "year" } = {},
+  opts: { maxResults?: number; deep?: boolean; topic?: "general" | "news"; timeRange?: "month" | "year"; exclude?: string[] } = {},
 ) {
   if (MOCK_SEARCH) return mockSearch(query);
   const key = process.env.TAVILY_API_KEY;
@@ -28,7 +28,7 @@ export async function search(
       search_depth: opts.deep === false ? "basic" : "advanced",
       max_results: opts.maxResults ?? 5,
       include_answer: false,
-      exclude_domains: EXCLUDE,
+      exclude_domains: [...EXCLUDE, ...(opts.exclude ?? [])],
       ...(opts.topic ? { topic: opts.topic } : {}),
       ...(opts.timeRange ? { time_range: opts.timeRange } : {}),
     }),
