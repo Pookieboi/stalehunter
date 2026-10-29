@@ -24,17 +24,24 @@ export async function findMissing(opts: {
   sections: { heading: string; paragraphs: string[] }[];
   today: string;
   onCall: (c: CallRecord) => void;
+  /** For non-English editions: the subject's English name (better news coverage) and the language to write in. */
+  enTitle?: string;
+  langName?: string;
 }): Promise<Missing[]> {
   const { title, sections, today, onCall } = opts;
+  const subject = opts.enTitle ?? title;
 
   // Three angles: recent news, structural changes (the things encyclopedias care about), and a general sweep.
   const [news, changes, general] = await Promise.all([
-    search(title, { topic: "news", timeRange: "year", maxResults: 8 }).catch(() => [] as Source[]),
-    search(`${title} acquired OR merger OR "new CEO" OR appointed OR "shut down" OR bankruptcy OR launched OR elected`, {
+    search(subject, { topic: "news", timeRange: "year", maxResults: 8 }).catch(() => [] as Source[]),
+    search(`${subject} acquired OR merger OR "new CEO" OR appointed OR "shut down" OR bankruptcy OR launched OR elected`, {
       maxResults: 5,
       deep: false,
     }).catch(() => [] as Source[]),
-    search(`${title} latest developments ${today.slice(0, 4)}`, { maxResults: 5, deep: false }).catch(() => [] as Source[]),
+    search(opts.enTitle ? `${title} ${today.slice(0, 4)}` : `${title} latest developments ${today.slice(0, 4)}`, {
+      maxResults: 5,
+      deep: false,
+    }).catch(() => [] as Source[]),
   ]);
   const seen = new Set<string>();
   const sources = [...news, ...changes, ...general].filter((s) => !seen.has(s.url) && seen.add(s.url)).slice(0, 14);
@@ -82,7 +89,7 @@ Return JSON: {"items": [{
  "date": "when it happened as stated in the sources (e.g. 'March 2025'), never invented",
  "date_iso": "the same date as YYYY-MM",
  "why": "one sentence on why the article needs it",
- "sentence": "a neutral, encyclopedic sentence an editor could add, using only facts in the sources",
+ "sentence": "a neutral, encyclopedic sentence an editor could add, using only facts in the sources${opts.langName ? `, written in ${opts.langName}` : ""}",
  "section": "the best existing section to add it to, chosen from: ${JSON.stringify(outline)}",
  "key_terms": ["2-3 distinctive words or names that would appear in the article if it already covered this"],
  "significance": 1-5 (5 = belongs in the article's lead; 4 = clearly notable change; 3 = a minor line; 1 = trivia),

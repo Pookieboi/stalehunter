@@ -8,6 +8,9 @@ import type { ArticleView, Claim, Finding, HuntEvent, HuntStats, Verdict } from 
 import type { CallRecord } from "@/lib/llm";
 import type { Missing } from "@/lib/missing";
 
+// Smaller language editions have far fewer editors, so facts go stale faster.
+const HINDI_EXAMPLE = "https://hi.wikipedia.org/wiki/विराट_कोहली";
+
 // Not just Wikipedia: any public page, read with Tavily Extract.
 const WEB_EXAMPLE = "https://www.cnbc.com/make-it/2021/11/30/parag-agrawal-went-from-twitter-engineer-to-ceo-in-just-10-years.html";
 
@@ -15,6 +18,11 @@ const EXAMPLES = ["Mobius Motors", "Manchester United F.C.", "ISRO", "List of ta
 
 // Real catches from our evaluation runs, cycled on the landing page.
 const CATCHES = [
+  {
+    article: "विराट कोहली (Hindi Wikipedia)",
+    was: "विराट कोहली भारतीय क्रिकेट टीम के तीनों फॉर्मेट के कप्तान हैं",
+    now: "former captain; Shubman Gill and Suryakumar Yadav lead India in 2026",
+  },
   { article: "Manchester United F.C.", was: "is ranked third in the Deloitte Football Money League", now: "ranked 8th in the 2026 edition" },
   { article: "ISRO", was: "a mission to Venus is scheduled for 2025", now: "launch now planned for March 2028" },
   { article: "US Airline Pilots Association", was: "currently under the jurisdiction of Judge Roslyn Silver", now: "her ruling was vacated on appeal in 2015" },
@@ -410,6 +418,13 @@ function Landing({
             🎲 Random article from the backlog
           </button>
           <button
+            onClick={() => onExample(HINDI_EXAMPLE)}
+            className="rounded-full bg-orange-500/10 px-3.5 py-1.5 text-orange-200 ring-1 ring-orange-400/30 transition hover:bg-orange-500/20"
+            title={HINDI_EXAMPLE}
+          >
+            🇮🇳 हिन्दी विकिपीडिया: विराट कोहली
+          </button>
+          <button
             onClick={() => onExample(WEB_EXAMPLE)}
             className="rounded-full bg-sky-500/10 px-3.5 py-1.5 text-sky-200 ring-1 ring-sky-400/30 transition hover:bg-sky-500/20"
             title={WEB_EXAMPLE}
@@ -598,7 +613,14 @@ function ResultHeader({
     <div className="fade-up mt-6 rounded-2xl p-5 glass sm:p-6">
       <div className="flex flex-wrap items-center justify-between gap-6">
       <div className="min-w-0">
-        <div className="text-xs uppercase tracking-widest text-stone-500">Freshness report</div>
+        <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-stone-500">
+          Freshness report
+          {article.lang !== "en" && article.source !== "web" && (
+            <span className="rounded-full bg-orange-500/15 px-2 py-0.5 normal-case tracking-normal text-orange-200 ring-1 ring-orange-400/30">
+              {new Intl.DisplayNames(["en"], { type: "language" }).of(article.lang) ?? article.lang} Wikipedia
+            </span>
+          )}
+        </div>
         <a href={article.url} target="_blank" rel="noreferrer" className="mt-1 block font-display text-4xl hover:underline">
           {article.title}
         </a>

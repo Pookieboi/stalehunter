@@ -47,6 +47,14 @@
       "Mobius Motors",
       "ISRO",
       "https://www.cnbc.com/make-it/2021/11/30/parag-agrawal-went-from-twitter-engineer-to-ceo-in-just-10-years.html"
+    ],
+    "regress2": [
+      "Indian Premier League",
+      "Manchester United F.C.",
+      "https://hi.wikipedia.org/wiki/विराट_कोहली"
+    ],
+    "regress3": [
+      "Indian Premier League"
     ]
   }
 }

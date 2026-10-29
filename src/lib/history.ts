@@ -10,15 +10,19 @@ type Token = { str: string; o_rev_id: number };
 
 const words = (t: string) => t.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
 
-type Provenance = { w: string; rev: number }[];
+type Provenance = { w: string; rev: number }[] & { lang?: string };
+
+const WIKIWHO_LANGS = new Set(["en", "de", "es", "eu", "tr", "fr", "it", "nl", "pl", "pt"]);
 
 /**
  * Downloads token-level provenance for the article's current revision. Start this early
  * (it takes a few seconds) and pass the promise to sentenceAges later. Never rejects.
  */
-export async function loadProvenance(title: string): Promise<Provenance> {
+export async function loadProvenance(title: string, lang = "en"): Promise<Provenance> {
+  // WikiWho covers a handful of large editions; others simply get no sentence ages.
+  if (!WIKIWHO_LANGS.has(lang)) return [];
   try {
-    const url = `https://wikiwho-api.wmcloud.org/en/api/v1.0.0-beta/rev_content/${encodeURIComponent(
+    const url = `https://wikiwho-api.wmcloud.org/${lang}/api/v1.0.0-beta/rev_content/${encodeURIComponent(
       title.replace(/ /g, "_"),
     )}/?o_rev_id=true&editor=false&token_id=false&out=false&in=false`;
     const res = await fetchRetry(url, { headers: { "User-Agent": WIKI_UA }, signal: AbortSignal.timeout(20_000) }, 1);
@@ -27,7 +31,9 @@ export async function loadProvenance(title: string): Promise<Provenance> {
     const rev = data.revisions?.[0];
     const raw: Token[] = rev ? (Object.values(rev)[0] as { tokens: Token[] }).tokens : [];
     // Keep only word-like tokens so they line up with the plain-text sentence.
-    return raw.filter((t) => /[\p{L}\p{N}]/u.test(t.str)).map((t) => ({ w: t.str.toLowerCase(), rev: t.o_rev_id }));
+    const tokens: Provenance = raw.filter((t) => /[\p{L}\p{N}]/u.test(t.str)).map((t) => ({ w: t.str.toLowerCase(), rev: t.o_rev_id }));
+    tokens.lang = lang;
+    return tokens;
   } catch {
     return [];
   }
@@ -46,7 +52,7 @@ export async function sentenceAges(
     if (!tokens.length) return sentences.map(() => null);
     const revSets = sentences.map((s) => locate(words(s), tokens));
     const allRevs = [...new Set(revSets.flatMap((r) => r ?? []))];
-    const times = await revisionTimes(allRevs);
+    const times = await revisionTimes(allRevs, tokens.lang ?? "en");
 
     return revSets.map((revs) => {
       if (!revs) return null;
@@ -83,14 +89,14 @@ function locate(target: string[], tokens: { w: string; rev: number }[]): number[
   return bestScore >= 0.7 ? best : null;
 }
 
-async function revisionTimes(revIds: number[]) {
+async function revisionTimes(revIds: number[], lang: string) {
   const times = new Map<number, string>();
   for (let i = 0; i < revIds.length; i += 50) {
     const qs = new URLSearchParams({
       action: "query", format: "json", formatversion: "2", prop: "revisions",
       revids: revIds.slice(i, i + 50).join("|"), rvprop: "ids|timestamp",
     });
-    const res = await fetchRetry(`https://en.wikipedia.org/w/api.php?${qs}`, { headers: { "User-Agent": WIKI_UA } });
+    const res = await fetchRetry(`https://${lang}.wikipedia.org/w/api.php?${qs}`, { headers: { "User-Agent": WIKI_UA } });
     if (!res.ok) continue;
     const data = await res.json();
     for (const p of data.query?.pages ?? []) for (const r of p.revisions ?? []) times.set(r.revid, r.timestamp);

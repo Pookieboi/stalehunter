@@ -8,7 +8,8 @@ export type Source = { title: string; url: string; content: string; published?: 
 // Wikipedia and its mirrors would just echo the statement we're checking;
 // social platforms are rarely citable on Wikipedia.
 const EXCLUDE = [
-  "wikipedia.org", "wikiwand.com", "wikimedia.org", "dbpedia.org", "wikidata.org", "alchetron.com",
+  "wikipedia.org", "wikiwand.com", "wikimedia.org", "dbpedia.org", "wikidata.org", "alchetron.com", "kiddle.co",
+  "wikizero.com", "wiki2.org", "everybodywiki.com", "justapedia.org",
   "facebook.com", "instagram.com", "pinterest.com", "tiktok.com", "quora.com", "youtube.com", "linkedin.com", "medium.com",
   "x.com", "twitter.com", "reddit.com", "threads.com",
 ];
