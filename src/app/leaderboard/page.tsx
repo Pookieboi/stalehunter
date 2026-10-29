@@ -127,8 +127,8 @@ function Row({ entry: r, rank }: { entry: Entry; rank: number }) {
               )}
               {o.confirmed && <span className="text-red-700">✓✓ 2 models agreed</span>}
               {o.sources.slice(0, 2).map((s) => (
-                <a key={s.url} href={s.url} target="_blank" rel="noreferrer" className="underline decoration-stone-300 hover:text-ink">
-                  {new URL(s.url).hostname.replace(/^www\./, "")}
+                <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="underline decoration-stone-300 hover:text-ink">
+                  {new URL(s.url).hostname.replace(/^www\./, "")} ↗
                 </a>
               ))}
             </div>

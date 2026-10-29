@@ -877,26 +877,34 @@ function FindingCard({
         </div>
       )}
 
-      {finding.sources.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-1.5">
-          {finding.sources.map((s) => (
-            <li key={s.url}>
-              <a
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="inline-block max-w-[230px] truncate rounded-md bg-white/5 px-2 py-0.5 text-xs text-stone-300 ring-1 ring-white/10 hover:bg-white/10"
-                title={s.title}
-              >
-                {hostname(s.url)}
-                {s.published ? ` · ${new Date(s.published).toLocaleDateString()}` : ""}
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SourceChips sources={finding.sources} />
     </article>
+  );
+}
+
+function SourceChips({ sources }: { sources: Finding["sources"] }) {
+  if (!sources.length) return null;
+  return (
+    <ul className="mt-3 flex flex-wrap gap-1.5">
+      {sources.map((s) => (
+        <li key={s.url}>
+          <a
+            href={s.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex max-w-[240px] items-center gap-1 rounded-md bg-white/5 px-2 py-0.5 text-xs text-stone-300 ring-1 ring-white/10 hover:bg-white/10 hover:text-white"
+            title={`${s.title} (opens in a new tab)`}
+          >
+            <span className="truncate">
+              {hostname(s.url)}
+              {s.published ? ` · ${new Date(s.published).toLocaleDateString()}` : ""}
+            </span>
+            <span aria-hidden>↗</span>
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -928,6 +936,7 @@ function UnverifiedGroup({
             <li key={c.id} id={`card-${c.id}`} onClick={() => onPick(c.id)} className="cursor-pointer border-t border-white/10 pt-3">
               <p className="font-serif text-stone-300">{sentences[c.sid]}</p>
               <p className="mt-1 text-xs text-stone-500">{findings[c.id]?.reason}</p>
+              <SourceChips sources={findings[c.id]?.sources ?? []} />
             </li>
           ))}
         </ul>
