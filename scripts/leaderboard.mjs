@@ -22,7 +22,8 @@ for (const dir of dirs) {
     const events = readFileSync(join(dir, f), "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
     const article = events.find((e) => e.type === "article")?.article;
     const stats = events.find((e) => e.type === "done")?.stats;
-    if (!article || !stats || !stats.checked) continue;
+    // The Hall of Stale is about Wikipedia; web-page checks are excluded.
+    if (!article || !stats || !stats.checked || article.source === "web") continue;
     const claims = events.find((e) => e.type === "claims")?.claims ?? [];
     const ages = Object.fromEntries(events.filter((e) => e.type === "age").map((e) => [e.claimId, e.age]));
     const outdated = events

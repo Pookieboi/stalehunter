@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-10-28T20:36:58.003Z",
+  "generatedAt": "2026-10-29T19:09:43.382Z",
   "reviewed": true,
-  "articles": 32,
-  "checked": 221,
-  "outdated": 16,
-  "avgYearsUntouched": 5.727298932840266,
+  "articles": 33,
+  "checked": 230,
+  "outdated": 19,
+  "avgYearsUntouched": 5.729870908497476,
   "results": [
     {
       "title": "Mobius Motors",
@@ -102,7 +102,90 @@
           ]
         }
       ],
-      "oldestYears": 8.141601579429361
+      "oldestYears": 8.144173555086573
+    },
+    {
+      "title": "विराट कोहली",
+      "url": "https://hi.wikipedia.org/wiki/%E0%A4%B5%E0%A4%BF%E0%A4%B0%E0%A4%BE%E0%A4%9F_%E0%A4%95%E0%A5%8B%E0%A4%B9%E0%A4%B2%E0%A5%80",
+      "lastEdited": "2026-09-28T18:24:24Z",
+      "stats": {
+        "checked": 9,
+        "outdated": 3,
+        "current": 3,
+        "unverifiable": 3
+      },
+      "outdated": [
+        {
+          "claim": "विराट कोहली भारतीय क्रिकेट टीम के तीनों फॉर्मेट के कप्तान हैं",
+          "sentence": "विराट कोहली (जन्म: 5 नवम्बर 1988) भारतीय क्रिकेट टीम के तीनों फॉर्मेट के कप्तान हैं।",
+          "currentFact": "Virat Kohli is a former captain of the Indian cricket team in all three formats (2014–2022); as of 2026, Shubman Gill (Test), Rohit Sharma (ODI), and Suryakumar Yadav (T20I) are the captains.",
+          "rewrite": "विराट कोहली (जन्म: 5 नवम्बर 1988) 2014 से 2022 तक भारतीय क्रिकेट टीम के तीनों फॉर्मेट के कप्तान रहे हैं; 2026 में शुभमन गिल (टेस्ट), रोहित शर्मा (वनडे) और सूर्यकुमार यादव (टी20) कप्तान हैं।",
+          "confidence": 0.95,
+          "confirmed": true,
+          "age": null,
+          "sources": [
+            {
+              "title": "Virat Kohli: Cricket Records & Career Timeline",
+              "url": "https://aitimeline.in/virat-kohli-indian-cricket-records-timeline-4055"
+            },
+            {
+              "title": "Indian Cricket Team Captain List 1932–2026 | All Captains",
+              "url": "https://cricketteamreport.com/indian-cricket-team-captain-list"
+            },
+            {
+              "title": "Virat Kohli Records: Career Stats, Centuries and Milestones",
+              "url": "https://www.sportsadda.asia/cricket/features/virat-kohlis-cricket-records-every-major-milestone-he-holds"
+            }
+          ]
+        },
+        {
+          "claim": "इंडियन प्रीमियर लीग में रॉयल चैलेंजर्स बैंगलोर की कप्तानी करते है",
+          "sentence": "भारत के घरेलू प्रथम श्रेणी क्रिकेट में विराट दिल्ली का प्रतिनिधित्व करते है जबकि इंडियन प्रीमियर लीग में रॉयल चैलेंजर्स बैंगलोर की कप्तानी करते है।",
+          "currentFact": "As of IPL 2025 and 2026, Rajat Patidar is the captain of Royal Challengers Bengaluru; Virat Kohli plays for the team but is not the captain.",
+          "rewrite": "भारत के घरेलू प्रथम श्रेणी क्रिकेट में विराट दिल्ली का प्रतिनिधित्व करते है जबकि इंडियन प्रीमियर लीग में रॉयल चैलेंजर्स बैंगलोर के लिए खेलते है।",
+          "confidence": 0.95,
+          "confirmed": true,
+          "age": null,
+          "sources": [
+            {
+              "title": "RCB IPL 2026 Squad: Virat Kohli, Rajat Patidar & Players | Rediff",
+              "url": "https://www.rediff.com/cricket/ipl-t20-2026/teams/royal-challengers-bengaluru-squad"
+            },
+            {
+              "title": "Royal Challengers Bengaluru 2026 Season: Fixtures, Squad & Title Win Recap",
+              "url": "https://theiplcricket.com/royal-challengers-bengaluru"
+            },
+            {
+              "title": "Royal Challengers Bengaluru IPL 2026: RCB Full Team & Squad, Player List, Stats & Records and Full Schedule",
+              "url": "https://timesofindia.indiatimes.com/sports/cricket/ipl/teams/royal-challengers-bengaluru"
+            }
+          ]
+        },
+        {
+          "claim": "Virat Kohli plays for Royal Challengers Bangalore and is their captain",
+          "sentence": "विराट कोहली इंडियन प्रीमियर लीग के पहले दौर से ही रॉयल चैलेंजर्स बैंगलौर के लिए खेलते आ रहे हैं साथ ही ये रॉयल चैलेंजर्स बैंगलोर के कप्तान भी है।",
+          "currentFact": "Virat Kohli has played for Royal Challengers Bengaluru since the inaugural IPL season (2008), but Rajat Patidar has been the team's captain since IPL 2025, including the 2026 season.",
+          "rewrite": "विराट कोहली इंडियन प्रीमियर लीग के पहले दौर से ही रॉयल चैलेंजर्स बैंगलोर के लिए खेलते आ रहे हैं, लेकिन 2025 से रजत पाटीदार टीम के कप्तान हैं।",
+          "confidence": 0.95,
+          "confirmed": true,
+          "age": null,
+          "sources": [
+            {
+              "title": "RCB IPL 2026 Squad: Virat Kohli, Rajat Patidar & Players | Rediff",
+              "url": "https://www.rediff.com/cricket/ipl-t20-2026/teams/royal-challengers-bengaluru-squad"
+            },
+            {
+              "title": "Virat Kohli Joins RCB Squad Ahead of IPL 2025",
+              "url": "https://www.timesofsports.com/cricket/ipl/virat-kohli-joins-rcb-squad-ahead-of-ipl-2025"
+            },
+            {
+              "title": "Virat Kohli picks all-time RCB playing XI with only one batter from IPL 2026 squad",
+              "url": "https://cricketaddictor.com/cricket-news/virat-kohli-picks-all-time-rcb-playing-xi-with-only-one-batter-from-ipl-2026-squad-416102"
+            }
+          ]
+        }
+      ],
+      "oldestYears": 0
     },
     {
       "title": "Geography of China",
@@ -156,7 +239,7 @@
           ]
         }
       ],
-      "oldestYears": 7.93397590447309
+      "oldestYears": 7.936547880130301
     },
     {
       "title": "Reliance Industries",
@@ -211,7 +294,7 @@
           ]
         }
       ],
-      "oldestYears": 5.581988269164955
+      "oldestYears": 5.584560244822167
     },
     {
       "title": "Manchester United F.C.",
@@ -303,7 +386,7 @@
           ]
         }
       ],
-      "oldestYears": 4.393136106769843
+      "oldestYears": 4.3957080824270545
     },
     {
       "title": "List of tallest buildings",
@@ -335,7 +418,7 @@
           ]
         }
       ],
-      "oldestYears": 0.6066590616206555
+      "oldestYears": 0.6092310372778665
     },
     {
       "title": "Pune Metro",
@@ -375,7 +458,7 @@
           ]
         }
       ],
-      "oldestYears": 0.05639864891499987
+      "oldestYears": 0.05897062457221081
     },
     {
       "title": "Indian Institutes of Technology",
@@ -514,7 +597,7 @@
     {
       "title": "Indian Premier League",
       "url": "https://en.wikipedia.org/wiki/Indian_Premier_League",
-      "lastEdited": "2026-10-25T06:13:54Z",
+      "lastEdited": "2026-10-29T08:23:59Z",
       "stats": {
         "checked": 10,
         "outdated": 0,
