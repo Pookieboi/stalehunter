@@ -21,7 +21,7 @@ Track: **Best Apps and Agents**
 ## Devpost: project name and tagline
 
 **Stale Hunter**
-*Every AI learns from Wikipedia. Some of it stopped being true. An agent that finds outdated facts and drafts sourced fixes.*
+*Every AI learns from Wikipedia. Some of it stopped being true. An agent that finds outdated facts, finds what's missing, and drafts sourced fixes.*
 
 ## Devpost: description (paste and edit)
 
@@ -36,10 +36,16 @@ Paste any Wikipedia article. Stale Hunter:
 4. **Judges** each fact with a reasoning model that must separate *"the world changed"* from *"sources disagree"*, and **digs deeper** with a sharper search when the evidence is thin.
 5. **Verifies**: a second, different Nemotron model must independently agree before anything is marked outdated.
 6. **Fixes**: every confirmed issue gets a rewritten sentence plus `{{cite web}}` references, ready to paste into the Wikipedia editor, along with when the sentence was written and how long it has sat untouched.
+7. **Finds what's missing**: in parallel, it reads the past year's news about the subject and surfaces notable developments the article never mentions (an acquisition, a new CEO, a closure), each with a draft sentence and the section it belongs in, also confirmed by a second model.
+
+Beyond Wikipedia:
+- **Any web page:** paste a docs page, help centre or blog URL. It's read with Tavily Extract and checked the same way, with the page's own site excluded from the evidence.
+- **An API for AI agents:** `POST /api/check {"statement": "…"}` returns whether a fact is still true, the current fact and sources in about 10 seconds, so an agent can check before it repeats something.
+- **Editor tools:** copy all fixes as wikitext, a ready Talk-page note, an edit summary and a share link.
 
 You watch it happen: the article scrolls under a scan line, the reader follows each verdict as it lands, and the result collapses to an A–F freshness grade with only the flagged passages.
 
-Real finds include Manchester United "ranked third" in the Deloitte Money League (8th in 2026; that sentence sat untouched **16 years**), ISRO's Venus mission "scheduled for 2025" (now 2028), and a Kenyan carmaker whose page still says production "will commence as soon as capital is raised" six years after it went into liquidation.
+Real finds include Manchester United "ranked third" in the Deloitte Money League (8th in 2026; that sentence sat untouched **16 years**), ISRO's Venus mission "scheduled for 2025" (now 2028), and a Kenyan carmaker whose page still says production "will commence as soon as capital is raised" six years after it went into liquidation, and never mentions its 2025 rescue by new owners. On Infosys, it surfaced the July 2026 appointment of a CEO-designate the article didn't yet mention.
 
 ### How we built it
 - **NVIDIA Nemotron on Nebius Token Factory**, each model doing the job it's best at:
@@ -47,7 +53,7 @@ Real finds include Manchester United "ranked third" in the Deloitte Money League
   - **Nemotron 3 Ultra** with full reasoning judges each fact against the evidence.
   - **Nemotron 3 Super** with reasoning gives an independent **second opinion** on every red flag.
   - The UI shows every model call, its latency and its tokens ("How Nemotron did the work").
-- **Tavily** advanced search for evidence, plus basic search for the agent's dig-deeper loop.
+- **Tavily**: advanced search for evidence, news search (past year) plus structural-change queries for missing developments, basic search for the dig-deeper loop, and **Tavily Extract** to read any web page.
 - **WikiWho** (Wikimedia Cloud) for token-level edit history, which drives both prioritisation and "untouched for N years".
 - **Next.js 15** on Vercel, streaming NDJSON events to a live UI.
 - Guardrails: sentence-ID referencing (the model can't misquote the article), prompt-injection-aware prompts, verdict rules enforced in code, retry/backoff for rate limits, a result cache and per-visitor limits on the public demo.
@@ -67,8 +73,8 @@ Fact-checking is mostly about *what not to flag*. The hard part wasn't finding n
 ### What's next
 - A bulk backlog run over Wikipedia's 45,000 "needs updating" articles with Nebius Serverless Jobs
 - Other languages. Smaller Wikipedias (Hindi, Marathi…) are far less maintained
-- A browser extension and watchlists for editors
-- The same engine for company docs and help centres, which go stale the same way
+- A browser extension and watchlists for editors and docs teams, re-checking pages on a schedule
+- An MCP server wrapping `/api/check`, so any agent framework can call it as a tool
 
 ### Built with
 nvidia-nemotron · nebius-token-factory · tavily · wikiwho · mediawiki-api · next.js · typescript · tailwindcss · vercel
@@ -96,10 +102,11 @@ Record at 1080p, browser full-screen, dark theme. Run each example once beforeha
 | 0:15–0:25 | Hover the live badge, scroll to "How the agent works" | "Stale Hunter is an agent that finds outdated facts, proves it, and drafts the fix, using NVIDIA Nemotron on Nebius Token Factory and Tavily." |
 | 0:25–1:05 | Click **Mobius Motors**. Show the scan line and auto-scroll, the agent log, the reader jumping to each verdict | "It reads every sentence with Nemotron Super, thinking off, in parallel. It dates each candidate from Wikipedia's edit history, so sentences nobody has touched in years go first. Tavily searches the live web. Nemotron Ultra weighs the evidence, and digs deeper when it's thin. Watch the log: 'evidence too thin, digging deeper'." |
 | 1:05–1:35 | Finished report: grade F, flagged-only view, an outdated card with diff and "✓✓ confirmed by 2 models", "untouched for 6 years" | "Before anything turns red, a second Nemotron model has to agree. This page still says production 'will commence as soon as capital is raised', written in 2020 and untouched for six years. The company went into liquidation in 2024." |
-| 1:35–1:50 | Click **Copy wikitext + citations**, then **Open editor** | "Each fix comes as a rewritten sentence with citations, ready to paste. Stale Hunter never edits Wikipedia itself. Humans decide." |
-| 1:50–2:15 | Scroll to "How Nemotron did the work" | "Each model does what it's best at: a fast model reads everything, the largest reasons about the few facts that matter, and a different one double-checks every red flag." |
+| 1:35–1:50 | Scroll to **What the article doesn't know yet**: the blue "Missing" card (2025 takeover) and the green inline addition in the reader | "It also reads this year's news. The article never mentions that the company was taken over and restarted in 2025, so Stale Hunter drafts that sentence too, and tells you which section it belongs in." |
+| 1:50–2:00 | Click **Copy Talk-page note** / **Copy all fixes** | "Every fix comes with citations, ready to paste, plus a Talk-page note. Stale Hunter never edits Wikipedia itself. Humans decide." |
+| 2:00–2:15 | Scroll to "How Nemotron did the work" | "Each model does what it's best at: a fast model reads everything, the largest reasons about the few facts that matter, and a different one double-checks every red flag." |
 | 2:15–2:40 | Open **Hall of Stale**: stats, then the Man Utd card ("written Jun 2010, untouched 16y") | "We audited 32 articles. Every listed fact was confirmed by two models and checked by a human. On average those sentences had sat untouched for nearly six years. One, sixteen." |
-| 2:40–2:55 | Back to landing, click 🎲 Random article from the backlog | "Our first version was wrong most of the time. An evaluation harness and a second-model verifier got it to most flags holding up in review." |
+| 2:40–2:55 | Landing: click **🌐 Any web page**, then show the **For AI agents** API box | "And it isn't just Wikipedia. Any web page, or one API call, so other AI agents can check a fact before they repeat it." |
 | 2:55–3:00 | Logo / URL | "Stale Hunter. Keeping the internet's memory fresh." |
 
 Tips: keep the cursor still while it scans; trim waiting time in the edit; show the URL bar once so judges see it's live.
