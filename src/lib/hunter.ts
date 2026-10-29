@@ -7,8 +7,9 @@
 // WikiWho dates every candidate sentence; long-untouched sentences are checked first.
 
 import { errorMessage } from "@/lib/errors";
-import { sentenceAges, type SentenceAge } from "./history";
+import { loadProvenance, sentenceAges, type SentenceAge } from "./history";
 import { chatJSON, FAST_MODEL, REASON_MODEL, type CallRecord, type Msg } from "./llm";
+import { findMissing, type Missing } from "./missing";
 import { search, type Source } from "./tavily";
 import { secondOpinion, type SecondOpinion } from "./verify";
 import { fetchArticle } from "./wikipedia";
@@ -39,7 +40,7 @@ export type Finding = {
   secondOpinion?: SecondOpinion;
 };
 
-export type HuntStats = { checked: number; outdated: number; current: number; unverifiable: number; ms: number };
+export type HuntStats = { checked: number; outdated: number; current: number; unverifiable: number; missing: number; ms: number };
 
 export type HuntEvent =
   | { type: "step"; stage: "fetch" | "scan" | "research" | "judge" | "done"; message: string }
@@ -49,6 +50,7 @@ export type HuntEvent =
   | { type: "dig"; claimId: string; query: string }
   | { type: "finding"; finding: Finding }
   | { type: "age"; claimId: string; age: SentenceAge }
+  | { type: "missing"; items: Missing[] }
   | { type: "call"; call: CallRecord }
   | { type: "done"; stats: HuntStats }
   | { type: "error"; message: string };
@@ -56,6 +58,7 @@ export type HuntEvent =
 const MAX_CLAIMS = Number(process.env.MAX_CLAIMS ?? 10);
 const CHUNK_CHARS = 9000;
 const MAX_CHUNKS = 6;
+const JUDGE_CONCURRENCY = Number(process.env.JUDGE_CONCURRENCY ?? 6);
 
 export async function hunt(input: string, emit: (e: HuntEvent) => void) {
   const started = Date.now();
@@ -67,6 +70,19 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
   const raw = await fetchArticle(input);
   const article = toView(raw);
   emit({ type: "article", article });
+  // Edit history takes a few seconds to download: fetch it while the scan runs.
+  const provenance = loadProvenance(raw.title);
+  // In parallel: what has happened that the article doesn't mention at all?
+  let missingCount = 0;
+  const missing = findMissing({ title: raw.title, sections: raw.sections, today, onCall })
+    .catch((e) => {
+      console.warn("[missing] failed:", errorMessage(e));
+      return [] as Missing[];
+    })
+    .then((items) => {
+      missingCount = items.length;
+      emit({ type: "missing", items });
+    });
 
   // 2. Scan for time-sensitive statements, chunk by chunk, in parallel.
   emit({ type: "step", stage: "scan", message: "Scanning every sentence for facts that can go stale" });
@@ -99,7 +115,7 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
   // likely to be stale. Dating every candidate first makes the ranking objective and stable.
   emit({ type: "step", stage: "scan", message: `Dating ${candidates.length} candidate sentences from the edit history` });
   const candidateAges = await sentenceAges(
-    raw.title,
+    provenance,
     candidates.map((c) => article.sentences[c.sid]),
   );
   const yearsSince = (iso?: string) => (iso ? (Date.now() - new Date(iso).getTime()) / (365.25 * 864e5) : 0);
@@ -116,7 +132,8 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
 
   emit({ type: "claims", claims });
   if (claims.length === 0) {
-    emit({ type: "done", stats: { checked: 0, outdated: 0, current: 0, unverifiable: 0, ms: Date.now() - started } });
+    await missing;
+    emit({ type: "done", stats: { checked: 0, outdated: 0, current: 0, unverifiable: 0, missing: missingCount, ms: Date.now() - started } });
     return;
   }
 
@@ -136,7 +153,7 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
   // 4. Judge each claim against the evidence with the reasoning model.
   emit({ type: "step", stage: "judge", message: "Weighing the evidence, then getting a second opinion on every red flag" });
   const findings: Finding[] = [];
-  await mapLimit(claims, 4, async (c) => {
+  await mapLimit(claims, JUDGE_CONCURRENCY, async (c) => {
     const context = { section: sectionOf(article, c.sid), previous: article.sentences[`s${Number(c.sid.slice(1)) - 1}`] };
     let sources = research.get(c.id) ?? [];
     const sentence = article.sentences[c.sid];
@@ -156,12 +173,14 @@ export async function hunt(input: string, emit: (e: HuntEvent) => void) {
     emit({ type: "finding", finding });
   });
 
+  await missing;
   const count = (v: Verdict) => findings.filter((f) => f.verdict === v).length;
   const stats: HuntStats = {
     checked: findings.length,
     outdated: count("outdated"),
     current: count("current"),
     unverifiable: count("unverifiable"),
+    missing: missingCount,
     ms: Date.now() - started,
   };
   emit({ type: "step", stage: "done", message: `Done — ${stats.outdated} outdated of ${stats.checked} checked` });
@@ -335,7 +354,7 @@ function toWikitext(sentence: string, sources: Source[], today: string) {
     .slice(0, 2)
     .map((s) => {
       const title = s.title.replace(/[|{}]/g, "-");
-      const date = s.published ? ` |date=${new Date(s.published).toISOString().slice(0, 10)}` : "";
+      const date = s.published && !isNaN(Date.parse(s.published)) ? ` |date=${new Date(s.published).toISOString().slice(0, 10)}` : "";
       return `<ref>{{cite web |url=${s.url} |title=${title}${date} |access-date=${today}}}</ref>`;
     })
     .join("");

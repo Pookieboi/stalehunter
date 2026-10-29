@@ -6,6 +6,7 @@ import { errorMessage } from "@/lib/errors";
 import type { SentenceAge } from "@/lib/history";
 import type { ArticleView, Claim, Finding, HuntEvent, HuntStats, Verdict } from "@/lib/hunter";
 import type { CallRecord } from "@/lib/llm";
+import type { Missing } from "@/lib/missing";
 
 const EXAMPLES = ["Mobius Motors", "Manchester United F.C.", "ISRO", "List of tallest buildings", "NewJeans"];
 
@@ -64,6 +65,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
   const [log, setLog] = useState<LogLine[]>([]);
   const [active, setActive] = useState("");
   const [follow, setFollow] = useState("");
+  const [missing, setMissing] = useState<Missing[] | null>(null);
   const startedAt = useRef(0);
   const claimsRef = useRef<Claim[]>([]);
 
@@ -94,6 +96,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
     setLog([]);
     setActive("");
     setFollow("");
+    setMissing(null);
     startedAt.current = Date.now();
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -149,6 +152,15 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
       case "dig":
         setFollow(e.claimId);
         say(`Evidence too thin, digging deeper: “${e.query}”`, "amber");
+        break;
+      case "missing":
+        setMissing(e.items);
+        say(
+          e.items.length
+            ? `Found ${e.items.length} recent development${e.items.length > 1 ? "s" : ""} the article never mentions`
+            : "Recent news checked: nothing major missing",
+          e.items.length ? "amber" : "muted",
+        );
         break;
       case "age":
         setAges((a) => ({ ...a, [e.claimId]: e.age }));
@@ -241,7 +253,16 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
 
           <Stepper stage={stage} running={running} />
 
-          {article && <ResultHeader article={article} total={claims.length} findings={judged} done={!!stats} />}
+          {article && (
+            <ResultHeader
+              article={article}
+              total={claims.length}
+              findings={judged}
+              missing={missing}
+              done={!!stats}
+              claims={claims}
+            />
+          )}
 
           <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_440px]">
             <section className="min-w-0 lg:sticky lg:top-4 lg:self-start">
@@ -255,6 +276,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
                   scanning={running && (stage === "fetch" || stage === "scan")}
                   follow={follow}
                   done={stage === "done"}
+                  missing={missing ?? []}
                   onPick={(id) => focus(id, "card")}
                 />
               ) : (
@@ -286,6 +308,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
                     onPick={() => focus(c.id, "sentence")}
                   />
                 ))}
+              <MissingBlock items={missing} running={running} articleUrl={article?.url ?? ""} />
               <UnverifiedGroup
                 claims={ordered.filter((c) => findings[c.id]?.verdict === "unverifiable")}
                 findings={findings}
@@ -513,11 +536,26 @@ export function GradeRing({ outdated, current, size = 84, pending }: { outdated:
   );
 }
 
-function ResultHeader({ article, total, findings, done }: { article: ArticleView; total: number; findings: Finding[]; done: boolean }) {
+function ResultHeader({
+  article,
+  total,
+  findings,
+  missing,
+  done,
+  claims,
+}: {
+  article: ArticleView;
+  total: number;
+  findings: Finding[];
+  missing: Missing[] | null;
+  done: boolean;
+  claims: Claim[];
+}) {
   const n = (v: Verdict) => findings.filter((f) => f.verdict === v).length;
   const g = grade(n("outdated"), n("current"));
   return (
-    <div className="fade-up mt-6 flex flex-wrap items-center justify-between gap-6 rounded-2xl p-5 glass sm:p-6">
+    <div className="fade-up mt-6 rounded-2xl p-5 glass sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-6">
       <div className="min-w-0">
         <div className="text-xs uppercase tracking-widest text-stone-500">Freshness report</div>
         <a href={article.url} target="_blank" rel="noreferrer" className="mt-1 block font-display text-4xl hover:underline">
@@ -532,6 +570,7 @@ function ResultHeader({ article, total, findings, done }: { article: ArticleView
         <Stat n={n("outdated")} label="outdated" className="text-red-400" />
         <Stat n={n("current")} label="still current" className="text-emerald-400" />
         <Stat n={n("unverifiable")} label="unverified" className="text-stone-500" />
+        <Stat n={missing?.length ?? 0} label="missing news" className="text-sky-300" />
         <div className="flex items-center gap-3 border-l border-white/10 pl-6">
           <GradeRing outdated={n("outdated")} current={n("current")} pending={!done} />
           <div className="text-xs text-stone-500">
@@ -542,7 +581,138 @@ function ResultHeader({ article, total, findings, done }: { article: ArticleView
           </div>
         </div>
       </div>
+      </div>
+      {done && (n("outdated") > 0 || (missing?.length ?? 0) > 0) && (
+        <EditorToolbar article={article} findings={findings} missing={missing ?? []} claims={claims} />
+      )}
     </div>
+  );
+}
+
+/** Everything an editor needs to act: a Talk-page note, all fixes at once, and an edit summary. */
+function EditorToolbar({
+  article,
+  findings,
+  missing,
+  claims,
+}: {
+  article: ArticleView;
+  findings: Finding[];
+  missing: Missing[];
+  claims: Claim[];
+}) {
+  const [copied, setCopied] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
+  const outdated = findings.filter((f) => f.verdict === "outdated");
+  const sentenceOf = (f: Finding) => article.sentences[claims.find((c) => c.id === f.claimId)?.sid ?? ""] ?? "";
+  const urls = (s: { url: string }[]) => s.map((x) => `[${x.url}]`).join(" ");
+  const bold = (t: string) => `'''${t}'''`;
+
+  const talk = [
+    `== Possibly outdated or missing information (automated check, ${today}) ==`,
+    "Stale Hunter, an AI-assisted freshness checker, flagged the items below. Each was confirmed by two independent models; please verify against the sources before editing.",
+    ...(outdated.length ? ["", bold("Possibly outdated statements")] : []),
+    ...outdated.map((f) => `* "${sentenceOf(f)}"\n*: Now: ${f.currentFact} ${urls(f.sources)}`),
+    ...(missing.length ? ["", bold("Recent developments the article does not mention")] : []),
+    ...missing.map((m) => `* ${m.headline} (${m.date}). Suggested for ''${m.section}'': ${m.sentence} ${urls(m.sources)}`),
+    "~~~~",
+  ].join("\n");
+
+  const allFixes = [
+    ...outdated.filter((f) => f.wikitext).map((f) => `<!-- replaces: ${sentenceOf(f)} -->\n${f.wikitext}`),
+    ...missing.map((m) => `<!-- add to section: ${m.section} -->\n${m.wikitext}`),
+  ].join("\n\n");
+
+  const parts = [
+    outdated.length ? `update ${outdated.length} outdated statement${outdated.length > 1 ? "s" : ""}` : "",
+    missing.length ? `add ${missing.length} recent development${missing.length > 1 ? "s" : ""}` : "",
+  ].filter(Boolean);
+  const summary = `${parts.join(" and ")} per cited sources (Stale Hunter-assisted)`.replace(/^./, (c) => c.toUpperCase());
+
+  const copy = (key: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(key);
+    setTimeout(() => setCopied(""), 1500);
+  };
+  const btn = "rounded-lg px-3 py-1.5 text-xs transition glass hover:bg-white/10";
+  return (
+    <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-white/10 pt-4 text-stone-200">
+      <span className="mr-1 text-xs uppercase tracking-widest text-stone-500">For editors</span>
+      <button className={btn} onClick={() => copy("talk", talk)}>
+        {copied === "talk" ? "Copied ✓" : "Copy Talk-page note"}
+      </button>
+      <button className={btn} onClick={() => copy("all", allFixes)}>
+        {copied === "all" ? "Copied ✓" : "Copy all fixes (wikitext)"}
+      </button>
+      <button className={btn} onClick={() => copy("summary", summary)}>
+        {copied === "summary" ? "Copied ✓" : "Copy edit summary"}
+      </button>
+      <a href={article.url.replace("/wiki/", "/wiki/Talk:")} target="_blank" rel="noopener noreferrer" className={btn}>
+        Open Talk page ↗
+      </a>
+    </div>
+  );
+}
+
+function MissingBlock({ items, running, articleUrl }: { items: Missing[] | null; running: boolean; articleUrl: string }) {
+  if (items === null) {
+    return running ? (
+      <div className="rounded-2xl border border-dashed border-sky-400/30 p-4 text-sm text-sky-200/80">
+        <span className="mr-2 inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-sky-400" />
+        Reading this year&apos;s news for anything the article doesn&apos;t mention…
+      </div>
+    ) : null;
+  }
+  if (!items.length) return null;
+  return (
+    <section className="space-y-3">
+      <h3 className="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-sky-300">What the article doesn&apos;t know yet</h3>
+      {items.map((m) => (
+        <MissingCard key={m.id} item={m} articleUrl={articleUrl} />
+      ))}
+    </section>
+  );
+}
+
+function MissingCard({ item: m, articleUrl }: { item: Missing; articleUrl: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <article className="fade-up rounded-2xl border border-sky-400/30 bg-sky-950/30 p-4 text-sm shadow-[0_10px_40px_-14px_rgb(56_189_248/0.5)]">
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="rounded-full bg-sky-400 px-2.5 py-0.5 text-xs font-semibold text-sky-950">Missing</span>
+        <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-sky-200 ring-1 ring-sky-400/30">✓✓ confirmed by 2 models</span>
+        <span className="ml-auto text-xs text-stone-400">{m.date}</span>
+      </div>
+      <p className="mt-2.5 font-medium text-stone-100">{m.headline}</p>
+      <p className="mt-1 text-stone-400">{m.why}</p>
+      <div className="mt-3 rounded-xl bg-paper p-3 font-serif leading-7 text-ink">
+        <div className="mb-1 font-sans text-[10px] font-semibold uppercase tracking-widest text-stone-500">
+          Suggested addition → {m.section}
+        </div>
+        <span className="bg-emerald-200 text-emerald-950">{m.sentence}</span>
+      </div>
+      <div className="mt-3 flex gap-2">
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(m.wikitext);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+          className="rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-black hover:bg-stone-200"
+        >
+          {copied ? "Copied ✓" : "Copy wikitext + citations"}
+        </button>
+        <a
+          href={`${articleUrl}${articleUrl.includes("?") ? "&" : "?"}action=edit`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-lg px-2.5 py-1 text-xs text-stone-200 glass hover:bg-white/10"
+        >
+          Open editor ↗
+        </a>
+      </div>
+      <SourceChips sources={m.sources} />
+    </article>
   );
 }
 
@@ -564,6 +734,7 @@ function Reader({
   scanning,
   follow,
   done,
+  missing,
   onPick,
 }: {
   article: ArticleView;
@@ -575,9 +746,22 @@ function Reader({
   /** Sentence the agent is working on right now; the reader scrolls to it. */
   follow: string;
   done: boolean;
+  missing: Missing[];
   onPick: (claimId: string) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
+  // Suggested additions are shown inline at the end of the section they belong to.
+  const additions = (i: number) =>
+    missing
+      .filter((m) => m.section === article.sections[i].heading || (i === 0 && !article.sections.some((s) => s.heading === m.section)))
+      .map((m) => (
+        <div key={m.id} className="fade-up my-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-100/70 px-3 py-2">
+          <div className="font-sans text-[10px] font-semibold uppercase tracking-widest text-emerald-800">
+            + Suggested addition · {m.date}
+          </div>
+          <span className="text-emerald-950">{m.sentence}</span>
+        </div>
+      ));
   const userScrolledAt = useRef(0);
   const [mode, setMode] = useState<"full" | "flagged">("full");
   const total = Object.keys(article.sentences).length;
@@ -666,6 +850,15 @@ function Reader({
     let skipped = 0;
     article.sections.forEach((s, i) => {
       let headingShown = false;
+      const showHeading = () => {
+        if (headingShown) return;
+        flaggedBlocks.push(
+          <h3 key={`h-${i}`} className="mb-1 mt-4 font-sans text-xs font-semibold uppercase tracking-widest text-stone-500">
+            {i === 0 ? "Introduction" : s.heading}
+          </h3>,
+        );
+        headingShown = true;
+      };
       s.paragraphs.forEach((p, j) => {
         if (!p.some((sid) => claimBySid.has(sid))) {
           skipped++;
@@ -678,20 +871,18 @@ function Reader({
             </div>,
           );
         skipped = 0;
-        if (!headingShown) {
-          flaggedBlocks.push(
-            <h3 key={`h-${i}`} className="mb-1 mt-4 font-sans text-xs font-semibold uppercase tracking-widest text-stone-500">
-              {i === 0 ? "Introduction" : s.heading}
-            </h3>,
-          );
-          headingShown = true;
-        }
+        showHeading();
         flaggedBlocks.push(
           <p key={`p-${i}-${j}`} className="mb-3 text-stone-700">
             {p.map(renderSentence)}
           </p>,
         );
       });
+      const adds = additions(i);
+      if (adds.length) {
+        showHeading();
+        flaggedBlocks.push(...adds);
+      }
     });
   }
 
@@ -742,6 +933,7 @@ function Reader({
                       {p.map(renderSentence)}
                     </p>
                   ))}
+                  {additions(i)}
                 </div>
               ))}
         </div>

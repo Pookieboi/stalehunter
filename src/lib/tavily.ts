@@ -12,7 +12,10 @@ const EXCLUDE = [
   "facebook.com", "instagram.com", "pinterest.com", "tiktok.com", "quora.com", "youtube.com", "linkedin.com", "medium.com",
 ];
 
-export async function search(query: string, opts: { maxResults?: number; deep?: boolean } = {}) {
+export async function search(
+  query: string,
+  opts: { maxResults?: number; deep?: boolean; topic?: "general" | "news"; timeRange?: "month" | "year" } = {},
+) {
   if (MOCK_SEARCH) return mockSearch(query);
   const key = process.env.TAVILY_API_KEY;
   if (!key) throw new Error("TAVILY_API_KEY is not set");
@@ -26,6 +29,8 @@ export async function search(query: string, opts: { maxResults?: number; deep?: 
       max_results: opts.maxResults ?? 5,
       include_answer: false,
       exclude_domains: EXCLUDE,
+      ...(opts.topic ? { topic: opts.topic } : {}),
+      ...(opts.timeRange ? { time_range: opts.timeRange } : {}),
     }),
   });
   if (!res.ok) throw new Error(`Tavily ${res.status}: ${(await res.text()).slice(0, 200)}`);

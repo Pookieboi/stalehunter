@@ -10,23 +10,40 @@ type Token = { str: string; o_rev_id: number };
 
 const words = (t: string) => t.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? [];
 
+type Provenance = { w: string; rev: number }[];
+
 /**
- * Returns an age for each sentence (same order), or null where the sentence
- * couldn't be located in the wikitext. Never throws: ages are a nice-to-have.
+ * Downloads token-level provenance for the article's current revision. Start this early
+ * (it takes a few seconds) and pass the promise to sentenceAges later. Never rejects.
  */
-export async function sentenceAges(title: string, sentences: string[]): Promise<(SentenceAge | null)[]> {
+export async function loadProvenance(title: string): Promise<Provenance> {
   try {
     const url = `https://wikiwho-api.wmcloud.org/en/api/v1.0.0-beta/rev_content/${encodeURIComponent(
       title.replace(/ /g, "_"),
     )}/?o_rev_id=true&editor=false&token_id=false&out=false&in=false`;
     const res = await fetchRetry(url, { headers: { "User-Agent": WIKI_UA }, signal: AbortSignal.timeout(20_000) }, 1);
-    if (!res.ok) return sentences.map(() => null);
+    if (!res.ok) return [];
     const data = await res.json();
     const rev = data.revisions?.[0];
     const raw: Token[] = rev ? (Object.values(rev)[0] as { tokens: Token[] }).tokens : [];
     // Keep only word-like tokens so they line up with the plain-text sentence.
-    const tokens = raw.filter((t) => /[\p{L}\p{N}]/u.test(t.str)).map((t) => ({ w: t.str.toLowerCase(), rev: t.o_rev_id }));
+    return raw.filter((t) => /[\p{L}\p{N}]/u.test(t.str)).map((t) => ({ w: t.str.toLowerCase(), rev: t.o_rev_id }));
+  } catch {
+    return [];
+  }
+}
 
+/**
+ * Returns an age for each sentence (same order), or null where the sentence
+ * couldn't be located in the wikitext. Never throws: ages are a nice-to-have.
+ */
+export async function sentenceAges(
+  provenance: Provenance | Promise<Provenance>,
+  sentences: string[],
+): Promise<(SentenceAge | null)[]> {
+  try {
+    const tokens = await provenance;
+    if (!tokens.length) return sentences.map(() => null);
     const revSets = sentences.map((s) => locate(words(s), tokens));
     const allRevs = [...new Set(revSets.flatMap((r) => r ?? []))];
     const times = await revisionTimes(allRevs);
@@ -36,7 +53,7 @@ export async function sentenceAges(title: string, sentences: string[]): Promise<
       const stamps = revs.map((r) => times.get(r)).filter((t): t is string => !!t).sort();
       if (!stamps.length) return null;
       // "Written" = when most of the sentence's words were added; "last touched" = newest word.
-      return { written: mode(revs.map((r) => times.get(r)).filter((t): t is string => !!t)), lastTouched: stamps[stamps.length - 1] };
+      return { written: mode(stamps), lastTouched: stamps[stamps.length - 1] };
     });
   } catch {
     return sentences.map(() => null);
