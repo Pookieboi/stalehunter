@@ -64,6 +64,7 @@ async function runJob(job) {
   const claims = events.find((e) => e.type === "claims")?.claims ?? [];
   const findings = events.filter((e) => e.type === "finding").map((e) => e.finding);
   const calls = events.filter((e) => e.type === "call").map((e) => e.call);
+  const missing = events.find((e) => e.type === "missing")?.items ?? [];
   return {
     ...job,
     ms: Date.now() - t,
@@ -75,6 +76,7 @@ async function runJob(job) {
     failedCalls: calls.filter((c) => !c.ok).length,
     calls: calls.length,
     verdicts: Object.fromEntries(["outdated", "current", "unverifiable"].map((v) => [v, findings.filter((f) => f.verdict === v).length])),
+    missing,
     findings: findings.map((f) => {
       const c = claims.find((c) => c.id === f.claimId);
       return { ...f, claim: c?.claim, sentence: article?.sentences[c?.sid] };
@@ -135,6 +137,11 @@ for (const r of ok)
     if (f.rewrite) lines.push(`- **Rewrite:** ${f.rewrite}`);
     lines.push(`- **Sources:** ${f.sources.map((s) => s.url).join(" , ") || "none"}`, `- **Verdict correct?** [ ] yes  [ ] no  [ ] partly`, "");
   }
+
+lines.push("", "## Suggested additions (missing recent developments) — review these too", "");
+for (const r of ok)
+  for (const m of r.missing ?? [])
+    lines.push(`### ${r.title}: ${m.headline} (${m.date})`, `- **Add to ${m.section}:** ${m.sentence}`, `- **Sources:** ${m.sources.map((s) => s.url).join(" , ")}`, "");
 
 lines.push("", "## Overruled by the second opinion — check these weren't real catches", "");
 for (const r of ok)

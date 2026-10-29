@@ -42,6 +42,11 @@
     ],
     "consistency3": [
       "Mobius Motors"
+    ],
+    "regress": [
+      "Mobius Motors",
+      "ISRO",
+      "https://www.cnbc.com/make-it/2021/11/30/parag-agrawal-went-from-twitter-engineer-to-ceo-in-just-10-years.html"
     ]
   }
 }

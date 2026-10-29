@@ -27,13 +27,17 @@ export async function findMissing(opts: {
 }): Promise<Missing[]> {
   const { title, sections, today, onCall } = opts;
 
-  // Two angles: recent news, and a general "latest" query for things news search misses.
-  const [news, general] = await Promise.all([
+  // Three angles: recent news, structural changes (the things encyclopedias care about), and a general sweep.
+  const [news, changes, general] = await Promise.all([
     search(title, { topic: "news", timeRange: "year", maxResults: 8 }).catch(() => [] as Source[]),
+    search(`${title} acquired OR merger OR "new CEO" OR appointed OR "shut down" OR bankruptcy OR launched OR elected`, {
+      maxResults: 5,
+      deep: false,
+    }).catch(() => [] as Source[]),
     search(`${title} latest developments ${today.slice(0, 4)}`, { maxResults: 5, deep: false }).catch(() => [] as Source[]),
   ]);
   const seen = new Set<string>();
-  const sources = [...news, ...general].filter((s) => !seen.has(s.url) && seen.add(s.url)).slice(0, 12);
+  const sources = [...news, ...changes, ...general].filter((s) => !seen.has(s.url) && seen.add(s.url)).slice(0, 14);
   if (!sources.length) return [];
 
   const outline = sections.map((s) => s.heading);
@@ -44,6 +48,7 @@ export async function findMissing(opts: {
     items?: {
       headline: string;
       date: string;
+      date_iso?: string;
       why: string;
       sentence: string;
       section: string;
@@ -66,18 +71,21 @@ Only include a development if ALL hold:
 - at least one reliable source states it as fact (no rumours, opinion pieces, listicles, market forecasts or press-release fluff);
 - it is encyclopedic: a change in leadership, ownership, status, a major event, result, launch, closure, record or legal outcome;
 - it would still matter in a year. NOT day-to-day news: interviews, talks, quotes, press conferences, rumours,
-  speculation about futures, injuries, single routine matches, weekly rankings or share-price moves;
+  speculation about futures, injuries, single routine matches, weekly rankings, share-price moves, award
+  nominations, minor partnerships, sponsorships or event appearances;
+- it has already happened (on or before today), not merely announced for the future;
 - the article does not already cover it, even in other words.
 Return at most 4, most significant first. Returning none is fine.
 
 Return JSON: {"items": [{
  "headline": "what happened, max 12 words",
  "date": "when it happened as stated in the sources (e.g. 'March 2025'), never invented",
+ "date_iso": "the same date as YYYY-MM",
  "why": "one sentence on why the article needs it",
  "sentence": "a neutral, encyclopedic sentence an editor could add, using only facts in the sources",
  "section": "the best existing section to add it to, chosen from: ${JSON.stringify(outline)}",
  "key_terms": ["2-3 distinctive words or names that would appear in the article if it already covered this"],
- "significance": 1-5 (5 = belongs in the article's lead; 3 = a line in a section; 1 = trivia),
+ "significance": 1-5 (5 = belongs in the article's lead; 4 = clearly notable change; 3 = a minor line; 1 = trivia),
  "confidence": 0.0-1.0,
  "cited": [source numbers]
 }]}`,
@@ -94,7 +102,9 @@ Return JSON: {"items": [{
 
   const fullText = sections.flatMap((s) => s.paragraphs).join(" ").toLowerCase();
   const picked = (r.items ?? [])
-    .filter((it) => it?.sentence && it.headline && Number(it.confidence) >= 0.6 && Number(it.significance) >= 3)
+    .filter((it) => it?.sentence && it.headline && Number(it.confidence) >= 0.6 && Number(it.significance) >= 4)
+    // Nothing from the future: an "upcoming" event isn't something the article is missing yet.
+    .filter((it) => !it.date_iso || !/^\d{4}-\d{2}$/.test(it.date_iso) || it.date_iso <= today.slice(0, 7))
     // Guard against "missing" items the article actually covers: all key terms already present means covered.
     .filter((it) => {
       const terms = (it.key_terms ?? []).map((t) => t.toLowerCase()).filter((t) => t.length > 2);
