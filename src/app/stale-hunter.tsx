@@ -63,6 +63,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
   const [stats, setStats] = useState<HuntStats | null>(null);
   const [log, setLog] = useState<LogLine[]>([]);
   const [active, setActive] = useState("");
+  const [follow, setFollow] = useState("");
   const startedAt = useRef(0);
   const claimsRef = useRef<Claim[]>([]);
 
@@ -92,6 +93,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
     setStats(null);
     setLog([]);
     setActive("");
+    setFollow("");
     startedAt.current = Date.now();
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -137,6 +139,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
       case "claims":
         setClaims(e.claims);
         claimsRef.current = e.claims;
+        if (e.claims[0]) setFollow(e.claims[0].id);
         say(`Flagged ${e.claims.length} time-sensitive facts`, "amber");
         break;
       case "research":
@@ -144,6 +147,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
         say(`${e.sources.length} sources · ${claimText(e.claimId)}`, "muted");
         break;
       case "dig":
+        setFollow(e.claimId);
         say(`Evidence too thin, digging deeper: “${e.query}”`, "amber");
         break;
       case "age":
@@ -151,6 +155,7 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
         break;
       case "finding":
         setFindings((f) => ({ ...f, [e.finding.claimId]: e.finding }));
+        setFollow(e.finding.claimId);
         say(
           `${VERDICT[e.finding.verdict].label}${e.finding.secondOpinion?.agree ? " (confirmed by 2nd model)" : ""} · ${claimText(e.finding.claimId)}`,
           e.finding.verdict === "outdated" ? "red" : e.finding.verdict === "current" ? "green" : "muted",
@@ -248,6 +253,8 @@ export default function StaleHunter({ backlog }: { backlog: number | null }) {
                   researched={researched}
                   active={active}
                   scanning={running && (stage === "fetch" || stage === "scan")}
+                  follow={follow}
+                  done={stage === "done"}
                   onPick={(id) => focus(id, "card")}
                 />
               ) : (
@@ -555,6 +562,8 @@ function Reader({
   researched,
   active,
   scanning,
+  follow,
+  done,
   onPick,
 }: {
   article: ArticleView;
@@ -563,21 +572,127 @@ function Reader({
   researched: Set<string>;
   active: string;
   scanning: boolean;
+  /** Sentence the agent is working on right now; the reader scrolls to it. */
+  follow: string;
+  done: boolean;
   onPick: (claimId: string) => void;
 }) {
   const scroller = useRef<HTMLDivElement>(null);
+  const userScrolledAt = useRef(0);
+  const [mode, setMode] = useState<"full" | "flagged">("full");
   const total = Object.keys(article.sentences).length;
   const marks = [...claimBySid.values()].map((c) => ({
     claim: c,
     pos: (Number(c.sid.slice(1)) - 1) / Math.max(total - 1, 1),
     verdict: findings[c.id]?.verdict,
   }));
+  const userIsReading = () => Date.now() - userScrolledAt.current < 5000;
 
-  function jump(claimId: string) {
+  // Once the report is in, only the flagged passages matter.
+  useEffect(() => {
+    setMode(done && claimBySid.size > 0 ? "flagged" : "full");
+  }, [done, claimBySid.size]);
+
+  // After collapsing, open on the first outdated fact (or the top if the article is clean).
+  useEffect(() => {
+    if (mode !== "flagged") return;
+    const firstStale = [...claimBySid.values()].find((c) => findings[c.id]?.verdict === "outdated");
+    requestAnimationFrame(() => (firstStale ? center(firstStale.id) : scroller.current?.scrollTo({ top: 0 })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
+
+  // Scanner: while the agent reads, the article glides up under a fixed scan line.
+  useEffect(() => {
+    const box = scroller.current;
+    if (!scanning || !box) return;
+    let raf = 0;
+    let last = performance.now();
+    let pos = box.scrollTop;
+    // Readable pace: ~10s for a short article, capped so long ones don't blur past.
+    const speed = Math.min(420, Math.max(120, (box.scrollHeight - box.clientHeight) / 10));
+    const tick = (t: number) => {
+      const dt = (t - last) / 1000;
+      last = t;
+      if (!userIsReading()) {
+        pos = pos + speed * dt >= box.scrollHeight - box.clientHeight ? 0 : pos + speed * dt;
+        box.scrollTop = pos;
+      } else pos = box.scrollTop;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [scanning]);
+
+  // Follow the agent: bring the sentence it's judging into view.
+  useEffect(() => {
+    if (follow && !userIsReading()) center(follow);
+  }, [follow]);
+
+  function center(claimId: string) {
     const el = document.getElementById(`sentence-${claimId}`);
     const box = scroller.current;
     if (el && box) box.scrollTo({ top: el.offsetTop - box.clientHeight / 3, behavior: "smooth" });
+  }
+
+  function jump(claimId: string) {
+    userScrolledAt.current = 0;
+    center(claimId);
     onPick(claimId);
+  }
+
+  const renderSentence = (sid: string) => {
+    const claim = claimBySid.get(sid);
+    const text = article.sentences[sid] + " ";
+    if (!claim) return <span key={sid}>{text}</span>;
+    const f = findings[claim.id];
+    const cls = f ? VERDICT[f.verdict].mark : researched.has(claim.id) ? "checking" : "bg-amber-200/60";
+    return (
+      <span
+        key={sid}
+        id={`sentence-${claim.id}`}
+        onClick={() => onPick(claim.id)}
+        className={`cursor-pointer rounded px-0.5 text-ink transition ${cls} ${active === claim.id ? "ring-2 ring-ink" : ""} ${
+          follow === claim.id && !f ? "ring-2 ring-amber-500" : ""
+        }`}
+      >
+        {text}
+      </span>
+    );
+  };
+
+  // Flagged view: only paragraphs with a flagged sentence, with gaps marked.
+  const flaggedBlocks: React.ReactNode[] = [];
+  if (mode === "flagged") {
+    let skipped = 0;
+    article.sections.forEach((s, i) => {
+      let headingShown = false;
+      s.paragraphs.forEach((p, j) => {
+        if (!p.some((sid) => claimBySid.has(sid))) {
+          skipped++;
+          return;
+        }
+        if (skipped)
+          flaggedBlocks.push(
+            <div key={`gap-${i}-${j}`} className="my-3 text-center font-sans text-xs uppercase tracking-widest text-stone-400">
+              ⋯ {skipped} paragraph{skipped > 1 ? "s" : ""} with nothing time-sensitive ⋯
+            </div>,
+          );
+        skipped = 0;
+        if (!headingShown) {
+          flaggedBlocks.push(
+            <h3 key={`h-${i}`} className="mb-1 mt-4 font-sans text-xs font-semibold uppercase tracking-widest text-stone-500">
+              {i === 0 ? "Introduction" : s.heading}
+            </h3>,
+          );
+          headingShown = true;
+        }
+        flaggedBlocks.push(
+          <p key={`p-${i}-${j}`} className="mb-3 text-stone-700">
+            {p.map(renderSentence)}
+          </p>,
+        );
+      });
+    });
   }
 
   return (
@@ -597,39 +712,46 @@ function Reader({
         ))}
       </div>
 
-      <div
-        ref={scroller}
-        className="relative max-h-[72vh] min-w-0 flex-1 overflow-y-auto overflow-x-hidden break-words rounded-2xl bg-paper px-7 py-6 font-serif text-[17px] leading-8 text-ink shadow-2xl lg:max-h-[calc(100vh-2rem)]"
-      >
-        {scanning && <div className="scan-beam" />}
-        {article.sections.map((s, i) => (
-          <div key={i} className="mb-5">
-            <h3 className={`mb-2 border-b border-stone-300 pb-1 font-serif font-semibold ${i === 0 ? "text-3xl" : "text-xl"}`}>
-              {i === 0 ? article.title : s.heading}
-            </h3>
-            {s.paragraphs.map((p, j) => (
-              <p key={j} className="mb-3 text-stone-700">
-                {p.map((sid) => {
-                  const claim = claimBySid.get(sid);
-                  const text = article.sentences[sid] + " ";
-                  if (!claim) return <span key={sid}>{text}</span>;
-                  const f = findings[claim.id];
-                  const cls = f ? VERDICT[f.verdict].mark : researched.has(claim.id) ? "checking" : "bg-amber-200/60";
-                  return (
-                    <span
-                      key={sid}
-                      id={`sentence-${claim.id}`}
-                      onClick={() => onPick(claim.id)}
-                      className={`cursor-pointer rounded px-0.5 text-ink transition ${cls} ${active === claim.id ? "ring-2 ring-ink" : ""}`}
-                    >
-                      {text}
-                    </span>
-                  );
-                })}
-              </p>
-            ))}
+      <div className="relative min-w-0 flex-1">
+        {done && claimBySid.size > 0 && (
+          <div className="mb-2 flex items-center justify-between text-xs text-stone-400">
+            <span>
+              {mode === "flagged"
+                ? `Showing the ${claimBySid.size} flagged passages`
+                : `Full article · ${total.toLocaleString()} sentences`}
+            </span>
+            <button onClick={() => setMode(mode === "flagged" ? "full" : "flagged")} className="rounded-full px-3 py-1 glass hover:bg-white/10">
+              {mode === "flagged" ? "Show full article" : "Show flagged only"}
+            </button>
           </div>
-        ))}
+        )}
+        <div
+          ref={scroller}
+          onWheel={() => (userScrolledAt.current = Date.now())}
+          onTouchMove={() => (userScrolledAt.current = Date.now())}
+          className="relative max-h-[72vh] overflow-y-auto overflow-x-hidden break-words rounded-2xl bg-paper px-7 py-6 font-serif text-[17px] leading-8 text-ink shadow-2xl lg:max-h-[calc(100vh-4rem)]"
+        >
+          <h2 className="mb-2 border-b border-stone-300 pb-1 font-serif text-3xl font-semibold">{article.title}</h2>
+          {mode === "flagged"
+            ? flaggedBlocks
+            : article.sections.map((s, i) => (
+                <div key={i} className="mb-5">
+                  {i > 0 && <h3 className="mb-2 border-b border-stone-300 pb-1 font-serif text-xl font-semibold">{s.heading}</h3>}
+                  {s.paragraphs.map((p, j) => (
+                    <p key={j} className="mb-3 text-stone-700">
+                      {p.map(renderSentence)}
+                    </p>
+                  ))}
+                </div>
+              ))}
+        </div>
+        {/* Fixed scan line: the text scrolls under it while the agent reads */}
+        {scanning && (
+          <div className="pointer-events-none absolute inset-x-0 top-[38%]">
+            <div className="h-16 -translate-y-full bg-gradient-to-b from-transparent to-red-500/15" />
+            <div className="h-0.5 bg-red-500 shadow-[0_0_24px_6px_rgb(239_68_68/0.45)]" />
+          </div>
+        )}
       </div>
     </div>
   );
