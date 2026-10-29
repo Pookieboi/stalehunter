@@ -21,6 +21,7 @@ Built for the [Nebius × NVIDIA Global AI Hackathon](https://nebiusglobalaihacka
 | **Sentence age** | When each flagged sentence was written and how long it has sat untouched, from Wikipedia's edit history (WikiWho) |
 | **Freshness grade** | A–F per article |
 | **Editor tools** | Copy all fixes as wikitext, a ready Talk-page note, an edit summary |
+| **Any language** | Paste a link from any Wikipedia edition (e.g. `hi.wikipedia.org`). Smaller editions have far fewer editors; on Hindi Wikipedia it found Virat Kohli still described as captain of all three formats. Fixes are written in the article's language |
 | **Any web page** | Paste a docs page, help centre or blog URL; it's read with Tavily Extract and checked the same way |
 | **API for AI agents** | `POST /api/check {"statement": "..."}` → verdict, current fact, rewrite and sources in about 10 s |
 | **Hall of Stale** | `/leaderboard`: outdated facts found across 32 articles, each confirmed by two models and reviewed by hand |
@@ -46,7 +47,7 @@ Design choices:
 
 - **Each model does the job it's best at.** The fast model with thinking off reads everything (about 2 s per chunk); the largest model reasons only about the facts that matter; a different model double-checks every red flag. The UI shows every call, its latency and its tokens.
 - **No hallucinated quotes.** The scanner returns sentence IDs rather than copying text, so every flagged passage exists verbatim in the article.
-- **Evidence-only verdicts, rules enforced in code.** Past-anchored statements ("in 2017…") can't be "outdated"; rounding and definitional differences don't count; the judge must cite its sources.
+- **Evidence-only verdicts, rules enforced in code.** Past-anchored statements ("in 2017…") can't be "outdated"; rounding and definitional differences don't count; the judge must cite its sources, and undated or old pages can't confirm that something is still current (stale sources would otherwise "confirm" stale facts).
 - **Human in the loop.** Stale Hunter never edits Wikipedia. It drafts; editors decide.
 - **Prompt-injection aware.** Article text and web results are treated as untrusted data in every prompt.
 - **Public-demo safe.** Recent results are replayed from cache; fresh hunts are rate-limited per visitor and per day.

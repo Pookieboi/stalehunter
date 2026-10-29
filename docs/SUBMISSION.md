@@ -38,6 +38,8 @@ Paste any Wikipedia article. Stale Hunter:
 6. **Fixes**: every confirmed issue gets a rewritten sentence plus `{{cite web}}` references, ready to paste into the Wikipedia editor, along with when the sentence was written and how long it has sat untouched.
 7. **Finds what's missing**: in parallel, it reads the past year's news about the subject and surfaces notable developments the article never mentions (an acquisition, a new CEO, a closure), each with a draft sentence and the section it belongs in, also confirmed by a second model.
 
+Any language: paste a link from any Wikipedia edition. Smaller editions have far fewer editors, so facts drift faster. On **Hindi Wikipedia**, the opening line of Virat Kohli's article still calls him captain of all three formats; Stale Hunter flags it, names the current captains, and writes the fix in Hindi.
+
 Beyond Wikipedia:
 - **Any web page:** paste a docs page, help centre or blog URL. It's read with Tavily Extract and checked the same way, with the page's own site excluded from the evidence.
 - **An API for AI agents:** `POST /api/check {"statement": "…"}` returns whether a fact is still true, the current fact and sources in about 10 seconds, so an agent can check before it repeats something.
@@ -61,6 +63,8 @@ Real finds include Manchester United "ranked third" in the Deloitte Money League
 ### Challenges we ran into
 Our first version was confidently wrong: only about 2–3 of 10 "outdated" verdicts were real. It confused *historical corrections* ("that happened in 2014, not 2015"), rounding and different definitions (metro vs. city GDP) with staleness. We built an evaluation harness (29 articles, hand-reviewed verdicts) and iterated: a change-type classification, a past-anchored-statement rule, a second-model verifier and a dig-deeper loop. **On the final run, about 8–9 of 11 outdated verdicts held up in hand review**, unverifiable results dropped from 106 to 47, and model-call failures went to 0 of 340.
 
+A subtler trap: stale sources "confirming" stale facts. Old, undated profile pages still say Kohli is captain, and the judge once called that statement current, even inventing dates for the sources. Now the judge may never assume a source's date, and only recent evidence can confirm that something is still true.
+
 We also hit Wikipedia rate limits (fixed with a Wikimedia-compliant User-Agent and backoff) and run-to-run variance (fixed by ranking candidates on edit-history age, which raised sentence overlap between repeat runs from about 0.5 to 0.67–0.82).
 
 ### Accomplishments we're proud of
@@ -72,7 +76,7 @@ Fact-checking is mostly about *what not to flag*. The hard part wasn't finding n
 
 ### What's next
 - A bulk backlog run over Wikipedia's 45,000 "needs updating" articles with Nebius Serverless Jobs
-- Other languages. Smaller Wikipedias (Hindi, Marathi…) are far less maintained
+- Bulk runs across smaller Wikipedias (Hindi, Marathi, Tamil…), which have the fewest editors per article
 - A browser extension and watchlists for editors and docs teams, re-checking pages on a schedule
 - An MCP server wrapping `/api/check`, so any agent framework can call it as a tool
 
@@ -106,7 +110,7 @@ Record at 1080p, browser full-screen, dark theme. Run each example once beforeha
 | 1:50–2:00 | Click **Copy Talk-page note** / **Copy all fixes** | "Every fix comes with citations, ready to paste, plus a Talk-page note. Stale Hunter never edits Wikipedia itself. Humans decide." |
 | 2:00–2:15 | Scroll to "How Nemotron did the work" | "Each model does what it's best at: a fast model reads everything, the largest reasons about the few facts that matter, and a different one double-checks every red flag." |
 | 2:15–2:40 | Open **Hall of Stale**: stats, then the Man Utd card ("written Jun 2010, untouched 16y") | "We audited 32 articles. Every listed fact was confirmed by two models and checked by a human. On average those sentences had sat untouched for nearly six years. One, sixteen." |
-| 2:40–2:55 | Landing: click **🌐 Any web page**, then show the **For AI agents** API box | "And it isn't just Wikipedia. Any web page, or one API call, so other AI agents can check a fact before they repeat it." |
+| 2:40–2:55 | Landing: click **🇮🇳 हिन्दी विकिपीडिया** (pre-cached), show the F grade and the Hindi fix; then the **🌐 Any web page** chip and the **For AI agents** box | "Smaller Wikipedias have far fewer editors. Hindi Wikipedia still calls Virat Kohli captain of all three formats; Stale Hunter fixes it, in Hindi. And it works on any web page, or as one API call for other AI agents." |
 | 2:55–3:00 | Logo / URL | "Stale Hunter. Keeping the internet's memory fresh." |
 
 Tips: keep the cursor still while it scans; trim waiting time in the edit; show the URL bar once so judges see it's live.
