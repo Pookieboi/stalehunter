@@ -2,6 +2,8 @@
 
 **Every AI learns from Wikipedia. Some of it stopped being true.**
 
+**Live demo: https://stalehunter.vercel.app** · [Hall of Stale](https://stalehunter.vercel.app/leaderboard)
+
 Stale Hunter is an agent that keeps knowledge fresh. Give it a Wikipedia article (or any web page) and it:
 
 - finds every statement that may have gone out of date, checks it against the live web, and drafts a sourced fix;
@@ -90,7 +92,7 @@ Scripts: `scripts/eval.mjs` (evaluation), `scripts/leaderboard.mjs` (rebuild the
 | `TAVILY_API_KEY` | none | search and page extraction |
 | `MAX_CLAIMS` | `10` | facts checked per article |
 | `JUDGE_CONCURRENCY` | `6` | parallel judge calls |
-| `HUNTS_PER_IP_PER_HOUR` / `HUNTS_PER_DAY` | `6` / `300` | public demo limits |
+| `HUNTS_PER_IP_PER_HOUR` / `HUNTS_PER_DAY` | `20` / `300` | public demo limits |
 | `MOCK_AI` | unset | `1` = fake model responses for UI development |
 
 ## Tech

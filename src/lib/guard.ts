@@ -4,7 +4,7 @@
 import type { HuntEvent } from "./hunter";
 
 const CACHE_MS = Number(process.env.CACHE_MINUTES ?? 60) * 60_000;
-const PER_IP_PER_HOUR = Number(process.env.HUNTS_PER_IP_PER_HOUR ?? 6);
+const PER_IP_PER_HOUR = Number(process.env.HUNTS_PER_IP_PER_HOUR ?? 20);
 const PER_DAY = Number(process.env.HUNTS_PER_DAY ?? 300);
 
 const cache = new Map<string, { at: number; events: HuntEvent[] }>();
